@@ -32,4 +32,14 @@ class MovingChallan extends Model
     public function update_calculated_data(){
         $this->due();
     }
+
+    public function department(){
+        return $this->belongsTo(Department::class);
+    }
+
+    public function deliveryToDepartment(){
+        return $this->belongsTo(Department::class,'delivery_to')->withDefault([
+            'name' => '',
+        ]);
+    }
 }

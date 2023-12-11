@@ -70,8 +70,8 @@
                 $(this).closest('tr').find('.main_unit').css('width', '100%');
             } else {
                 subUnitQtyField.show();
-                $(this).closest('tr').find('.main_unit').css('width', '48%');
-                $(this).closest('tr').find('.sub_unit').css('width', '48%');
+                $(this).closest('tr').find('.main_unit').css('width', '100%');
+                $(this).closest('tr').find('.sub_unit').css('width', '100%');
             }
 
             // Update the sub_unit_qty field with the sub-unit name

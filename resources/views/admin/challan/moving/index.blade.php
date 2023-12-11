@@ -32,8 +32,8 @@
                                 <tr>
                                    <td>{{$challan->id}}</td>
                                    <td>{{ $challan->party->party_name}}</td>
-                                   <td>{{$challan->delivery_from}}</td>
-                                   <td>{{$challan->delivery_to}}</td>
+                                   <td>{{$challan->department->name}}</td>
+                                   <td>{{$challan->deliveryToDepartment->name }}</td>
                                    <td>{{$challan->release_by}}</td>
                                    <td>{{$challan->order_by}}</td>
                                     <td>{{$challan->receive_by}}</td>

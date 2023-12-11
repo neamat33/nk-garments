@@ -113,6 +113,7 @@ class items extends Model
     // Convert all quantity to sub_unit quantity
     public function to_sub_quantity($main_quantity,$sub_quantity)
     {
+
         $main_unit=$this->main_unit;
 
         $related_by=1;
