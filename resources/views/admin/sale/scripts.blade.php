@@ -156,22 +156,36 @@
                 grandTotal += +$(this).val();
             });
 
-            $(".mytable").find('input[class*="commission"]').each(function () {
-                commissionTotal += +$(this).val() || 0;
-            });
+            // $(".mytable").find('input[class*="commission"]').each(function () {
+            //     commissionTotal += +$(this).val() || 0 ;
+            // });
 
            
             discountTotal = +$("#input_discount").val() || 0;
+            commissionTotal = +$("#input_commission").val() || 0;
 
             // Subtract discount from the grand total
-            var receivableTotal = grandTotal - discountTotal;
+            var receivableTotal = grandTotal - commissionTotal - discountTotal;
 
             $("#input_receivable").val(receivableTotal.toFixed(2));
-            $("#input_commission").val(commissionTotal.toFixed(2));
-            $("#pay_amount").val(receivableTotal.toFixed(2));
+            // $("#input_commission").val(commissionTotal.toFixed(2));
+            // $("#pay_amount").val(receivableTotal.toFixed(2));
             $("#subtotal_").val(grandTotal.toFixed(2));
 
         }
+
+        $(document).ready(function () {
+            $("#pay_amount").on("input", function () {
+                var receivableTotal = parseFloat($("#input_receivable").val());
+                var partyAmount = parseFloat($(this).val());
+
+                if (partyAmount > receivableTotal) {
+                    toastr.warning('Cannot exceed Total Invoice Amount!');
+
+                    $(this).val(receivableTotal.toFixed(2));
+                }
+            });
+        });
 
         $(document).ready(function () {
             $("#pary_amount").on("input", function () {
@@ -188,6 +202,10 @@
 
 
         $("#input_discount").on("keyup", function (event) {
+            calculateGrandTotal();
+        });
+
+        $("#input_commission").on("keyup", function (event) {
             calculateGrandTotal();
         });
     });

@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\Department;
 class DepartmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:create-department', ['only' => ['create','store','edit','update']]);
+        $this->middleware('can:delete-department', ['only' => ['destroy']]);
+    }
+    
     public function index(){
 
     }

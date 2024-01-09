@@ -30,17 +30,17 @@ return new class extends Migration
 
             $table->string('purchase_type');
             $table->text('note')->nullable();
+            $table->decimal('returned_amount',22,2)->default(0);
             $table->decimal('payable', 22, 2)->default(0);
-            $table->decimal('returned',22,2)->default(0);
             $table->decimal('final_payable', 22, 2)->default(0);
             $table->decimal('paid',22,2)->default(0);
             $table->decimal('due',22,2)->default(0);
             $table->integer('total_qty')->default(0); 
+            $table->integer('returned_qty')->default(0); 
             $table->integer('delivery_qty')->default(0);
             $table->integer('due_qty')->default(0);
             $table->string('delivery_status')->nullable();
             $table->string('payment_status')->nullable();
-
             $table->timestamps();
         });
     }

@@ -22,6 +22,11 @@ class purchase extends Model
     {
         return $this->hasMany(ReceiveChallan::class,'purchase_id');
     }
+
+    public function purchase_return()
+    {
+        return $this->hasMany(PurchaseReturn::class,'purchase_id');
+    }
     
     public function payments()
     {
@@ -46,6 +51,15 @@ class purchase extends Model
         ]);
     }
 
+    public function update_return(){
+        $return_qty= $this->purchase_return()->sum('return_qty');  
+        $return_amount= $this->purchase_return()->sum('return_amount');
+
+         $this->update([
+            'returned_amount' =>$return_amount,
+            'returned_qty' => $return_qty,
+        ]);
+    }
 
     public function update_paid()
     {
@@ -56,15 +70,9 @@ class purchase extends Model
 
     public function update_delivery_qty()
     {
-        $total = $this->items()->sum('qty');
+        $total = $this->items()->sum('qty') - $this->returned_qty;
         $delivery=$this->items()->sum('delivery_qty');
         $due= $total - $delivery;
-
-        if($due <= 0){
-            $d_status="Delivered";
-        }else{
-            $d_status="Not Delivered";
-        }
 
         $this->items->each(function ($Item) {
             $Item->update_delivery_qty();
@@ -74,12 +82,13 @@ class purchase extends Model
             'total_qty' => $total,
             'delivery_qty' => $delivery,
             'due_qty' => $due,
-            'delivery_status' => $d_status,
+            // 'delivery_status' => $d_status,
         ]);
     }
 
-    public function update_calculated_data(){
+    public function update_calculated_amount(){
         // update paid
+        $this->update_return();
         $this->update_paid();
         $this->update_delivery_qty();
 
@@ -87,7 +96,9 @@ class purchase extends Model
             $Item->update_calculated_data();
         });
 
-        $final_payable=$this->final_payable - $this->returned;
+        $total=$this->items()->sum('sub_total');
+        
+        $final_payable=$total - $this->returned_amount;
         
         $this->update([
             'final_payable' => $final_payable,
@@ -95,23 +106,41 @@ class purchase extends Model
 
         $due = $this->final_payable - $this->paid;
 
-        if($due < 0){
+        $this->update([
+            'due' => $due,
+        ]);
+    }
+
+    public function update_status(){
+        if($this->returned_amount == $this->payable ){
+            $d_status="Full Return";
+        }elseif($this->due_qty <= 0){
+            $d_status="Delivered";
+        }else{
+            $d_status="Not Delivered";
+        }
+
+        if($this->due <= 0){
             $status="Paid";
         }else{
             $status="Unpaid"; 
         }
 
         $this->update([
-            'due' => $due,
+            'delivery_status' => $d_status,
             'payment_status' => $status,
         ]);
-        
+    }
+
+    public function update_calculated_data(){
+        $this->update_calculated_amount();
+        $this->update_status();    
     }
 
     public function filter($request, $purchases)
     {
         if ($request->party_id != null) {
-            $purchases = $purchases->where('id', $request->party_id);
+            $purchases = $purchases->where('party_id', $request->party_id);
         }
 
         if ($request->purchase_form != null) {

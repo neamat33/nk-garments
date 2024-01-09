@@ -10,7 +10,7 @@
             cols += '<td><select name="new_item[]" class="select1 item-select">\n\
                         <option value="">Select Item</option>\n\
                         @foreach ($item as $val)\n\
-                        <option value="{{ $val->id }}" data-details="{{ "Name: " . $val->name . ", Type: " . $val->type }}" data-mainunit-name="{{ $val->main_unit->name }}" data-subunit-name="{{ $val->sub_unit_name->name }}" data-subunit-related="{{ $val->unit_related_by->related_by }}" data-price="{{ $val->unit_price }}">{{ $val->name }}</option>\n\
+                        <option value="{{ $val->id }}" data-details="{{ "Name: " . $val->name . ", Type: " . $val->type }}" data-product-type="{{ $val->product_type }}" data-mainunit-name="{{ $val->main_unit->name }}" data-subunit-name="{{ $val->sub_unit_name->name }}" data-subunit-related="{{ $val->unit_related_by->related_by }}" data-price="{{ $val->unit_price }}">{{ $val->name }}</option>\n\
                         @endforeach\n\
                     </select>\n\
                 </td>';
@@ -40,6 +40,8 @@
                 addButton.hide();  // Hide the "Add" button
             }
 
+            var product_type = selectedOption.data('product-type');
+            
             var unitName = selectedOption.data('mainunit-name');
             var subUnitName = selectedOption.data('subunit-name');
             var subUnitRelated = selectedOption.data('subunit-related');
@@ -64,6 +66,7 @@
 
             // Hide sub_unit_qty field if subUnitId is 'root'
             var subUnitQtyField = $(this).closest('tr').find('.sub_unit');
+            
             if (subUnitName === '') {
                 subUnitQtyField.hide();
                 $(this).closest('tr').find('.main_unit').css('width', '100%');
@@ -75,8 +78,13 @@
 
             // Update the sub_unit_qty field with the sub-unit name
             var subUnitNameLabel = $(this).closest('tr').find('.sub_unit_name');
+            
             subUnitNameLabel.text('Sub-Unit: ' + (subUnitName && subUnitName !== 'root' ? subUnitName : ''));
-
+            
+            if(product_type == "1"){
+                unitNameLabel.text('Weight: kg' );
+                subUnitNameLabel.text('Cone: pcs ');
+            }
             // Fetch variations for the selected item
             fetchVariations(itemId);
         });
@@ -128,6 +136,10 @@
             var main_unit_qty = +row.find('input[class*="main_unit_qty"]').val();
             var related_unit = +row.find('input[class*="related_by"]').val();
             var sub_unit_qty = +row.find('input[class*="sub_unit_qty"]').val() / related_unit || 0; // If sub_unit_qty is empty, default to 0
+            if(sub_unit_qty == 'Infinity'){
+                sub_unit_qty = 0;
+            }
+
             row.find('input[class*="sub_total"]').val((rate * (main_unit_qty + sub_unit_qty)).toFixed(2));
         }
 

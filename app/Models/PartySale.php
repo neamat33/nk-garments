@@ -9,7 +9,7 @@ class PartySale extends Model
 {
     use HasFactory;
 
-     protected $guarded = [];
+    protected $guarded = [];
 
     public function items()
     {
@@ -26,6 +26,16 @@ class PartySale extends Model
         return $this->hasMany(DeliveryChallan::class,'party_sale_id');
     }
 
+    public function party_sale_return()
+    {
+        return $this->hasMany(PartySaleReturn::class,'party_sale_id');
+    }
+
+    public function commission_items()
+    {
+        return $this->hasMany(PartySaleCommissionItem::class,'party_sale_id');
+    }
+
     public function order_by_employee(){
         return $this->belongsTo(Employee::class,'order_by')->withDefault([
             'employee_name' => '',
@@ -38,37 +48,49 @@ class PartySale extends Model
         ]);
     }
 
-    public function update_paid()
-    {
-        $this->update([
-            'paid' => $this->payments()->sum('amount')
-        ]);
-    }
-
-    public function update_commission()
-    {
-        $this->update([
-            'total_commission' => $this->items()->sum('commission')
-        ]);
-    }
-
     public function party(){
         return $this->belongsTo(Party::class)->withDefault([
             'party_name' => '',
         ]);
     }
+
+    public function update_return(){
+        $return_qty= $this->party_sale_return()->sum('return_qty');  
+        $return_commission= $this->party_sale_return()->sum('return_commission');
+        $returned_discount= $this->party_sale_return()->sum('return_discount');
+        $return_amount= $this->party_sale_return()->sum('return_amount');
+
+        $this->update([
+            'returned_commission'=>$return_commission,
+            'returned_discount' =>$returned_discount,
+            'returned_amount' =>$return_amount,
+            'returned_qty' => $return_qty,
+        ]);
+    }
+
+    public function update_commission()
+    {
+        $add_commission =$this->commission_items()->sum('total_commission');
+        $total_commission=$this->sale_commission + $add_commission;
+        $this->update([
+            'add_commission' =>$add_commission,
+            'total_commission' => $total_commission,
+        ]);
+    }
+    
+    public function update_paid()
+    {
+        $this->update([
+            'paid' => $this->payments()->sum('amount'),
+            'payment_discount' => $this->payments()->sum('discount'),
+        ]);
+    }
     
     public function update_delivery_qty()
     {
-        $total = $this->items()->sum('qty');
+        $total = $this->items()->sum('qty') - $this->returned_qty;
         $delivery=$this->items()->sum('delivery_qty');
         $due= $total - $delivery;
-
-        if($due <= 0){
-            $d_status="Delivered";
-        }else{
-            $d_status="Not Delivered";
-        }
 
         $this->items->each(function ($Item) {
             $Item->update_delivery_qty();
@@ -78,46 +100,70 @@ class PartySale extends Model
             'total_qty' => $total,
             'delivery_qty' => $delivery,
             'due_qty' => $due,
-            'delivery_status' => $d_status,
         ]);
 
     }
 
-    public function update_calculated_data()
+    public function update_calculated_amount()
     {
         // update paid
+        $this->update_return();
+        $this->update_commission();
         $this->update_paid();
         $this->update_delivery_qty();
-        $this->update_commission();
-        
+
         $this->items->each(function ($Item) {
             $Item->update_calculated_data();
         });
 
-        $final_receivable=$this->final_receivable - $this->returned;
+        $total=$this->items()->sum('sub_total') - $this->total_commission - $this->total_discount;
+        $final_receivable=$total - $this->returned_amount - $this->payment_discount;
         
         $this->update([
+            'receivable' =>$total,
             'final_receivable' => $final_receivable,
         ]);
 
         $due = $this->final_receivable  -$this->paid;
 
-        if($due < 0){
+        // update_due
+        $this->update([
+            'due' => $due,
+        ]);
+    }
+
+    public function update_status(){
+        if($this->returned_amount == $this->receivable ){
+            $d_status="Full Return";
+        }elseif($this->due_qty  <= 0){
+            $d_status="Delivered";
+        }else{
+            $d_status="Not Delivered";
+        }
+
+        if($this->due <= 0){
             $status="Paid";
         }else{
             $status="Unpaid"; 
         }
-        // update_due
+
         $this->update([
-            'due' => $due,
+            'delivery_status' => $d_status,
             'payment_status' => $status,
         ]);
     }
 
+    public function update_calculated_data()
+    {
+        $this->update_calculated_amount();
+        $this->update_status();    
+    }
+    
+
     public function filter($request, $sales)
     {
         if ($request->party_id != null) {
-            $sales = $sales->where('id', $request->party_id);
+            $sales = $sales->where('party_id', $request->party_id);
         }
 
         if ($request->showroom != null) {

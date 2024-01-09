@@ -25,6 +25,11 @@ class Payment extends Model
         return $this->belongsTo(Sale::class, 'paymentable_id', 'id');
     }
 
+    public function partySale()
+    {
+        return $this->belongsTo(PartySale::class, 'paymentable_id', 'id');
+    }
+
     public function purchase()
     {
         return $this->belongsTo(purchase::class, 'paymentable_id', 'id');

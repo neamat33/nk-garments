@@ -18,6 +18,20 @@ use Redirect,Response;
 
 class PartyPurchaseController extends Controller
 {
+
+    function __construct()
+    {
+         $this->middleware('can:list-party_purchase', ['only' => ['index']]);
+         $this->middleware('can:create-party_purchase', ['only' => ['create']]);
+         $this->middleware('can:edit-party_purchase', ['only' => ['edit','update']]);
+         $this->middleware('can:delete-party_purchase', ['only' => ['destroy']]);
+         $this->middleware('can:party_purchase_invoice', ['only' => ['invoice']]);
+         $this->middleware('can:party_purchase_report', ['only' => ['report']]);
+         $this->middleware('can:party_purchase_add_payment', ['only' => ['by_invoice']]);
+         $this->middleware('can:party_purchase_payment_list', ['only' => ['payment_list']]);
+        $this->middleware('can:create-purchase_return', ['only' => ['return_purchase']]);
+    }
+    
     /**
      * Display a listing of the resource.
      */
@@ -82,7 +96,6 @@ class PartyPurchaseController extends Controller
                 $variationCount = ItemVariation::where('item_id', $item_id)->count();
 
                 if ($request->item_variation_id[$key]) {
-
                     $data      = [];
                     $main_qty = 0;
                     $sub_qty = 0;
@@ -97,15 +110,19 @@ class PartyPurchaseController extends Controller
                     $data['item_id']     = $item_id;
                     $data['details']     = $request->item_details[$key];
                     $data['item_variation_id']= $request->item_variation_id[$key];
-                    $data['main_unit_qty'] = $main_qty;
-                    $data['sub_unit_qty'] = $sub_qty;
+                    if($item->product_type == '1'){
+                        $data['weight_qty'] = $main_qty;
+                        $data['cone_qty'] = $sub_qty;
+                    }else{
+                        $data['main_unit_qty'] = $main_qty;
+                        $data['sub_unit_qty'] = $sub_qty;
+                    }
                     $data['qty']         = $qty;
                     $data['rate']        = $request->rate[$key];
                     $data['sub_total']   = $request->sub_total[$key];
                     $purchase->items()->create($data);
 
                 }elseif($variationCount > 0 && $request->item_variation_id[$key] ==''){
-                    
                     $data      = [];
                     $main_qty = 0;
                     $sub_qty = 0;
@@ -132,14 +149,20 @@ class PartyPurchaseController extends Controller
                         $data['item_id'] = $item_id;
                         $data['item_variation_id'] = $variation->id;
                         $data['details'] = $request->item_details[$key];
-                        $data['main_unit_qty'] = $main_qty;
-                        $data['sub_unit_qty'] = $sub_qty;
+                        if($item->product_type == '1'){
+                            $data['weight_qty'] = $main_qty;
+                            $data['cone_qty'] = $sub_qty;
+                        }else{
+                            $data['main_unit_qty'] = $main_qty;
+                            $data['sub_unit_qty'] = $sub_qty;
+                        }
                         $data['qty'] = $qty;
                         $data['rate'] = $rate;
                         $data['sub_total'] =$subTotal;
                         $purchase->items()->create($data);
                     }
                 }else{
+                    
                     $data      = [];
                     $main_qty = 0;
                     $sub_qty = 0;
@@ -160,8 +183,15 @@ class PartyPurchaseController extends Controller
                     $data['purchase_id'] = $purchase->id;
                     $data['item_id']     = $item_id;
                     $data['details']     = $request->item_details[$key];
-                    $data['main_unit_qty'] = $main_qty;
-                    $data['sub_unit_qty'] = $sub_qty;
+
+                    if($item->product_type == '1'){
+                        $data['weight_qty'] = $main_qty;
+                        $data['cone_qty'] = $sub_qty;
+                    }else{
+                        $data['main_unit_qty'] = $main_qty;
+                        $data['sub_unit_qty'] = $sub_qty;
+                    }
+                    
                     $data['qty']         = $qty;
                     $data['rate']        = $request->rate[$key];
                     $data['sub_total']   = $request->sub_total[$key];
@@ -184,8 +214,7 @@ class PartyPurchaseController extends Controller
             $purchase->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'data saved!');
-
+            return back()->with('success', 'Party Purchase successful!');
         } catch (\Exception $e) {
             DB::rollback();
             info($e);
@@ -313,7 +342,6 @@ class PartyPurchaseController extends Controller
     
 
     public function by_invoice(Request $request){
-
         $purchase = purchase::findOrFail($request->invoice_id);
 
         $purchase->payments()->create([
@@ -335,6 +363,19 @@ class PartyPurchaseController extends Controller
         return back();
     }
 
+    public function return_purchase(purchase $party_purchase){
+        $item = items::orderBy('id','desc')->get();
+        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
+        $employees =  Employee::orderBy('id','desc')->get();
+        
+        if($party_purchase->purchase_return()->count() > 0){
+            session()->flash('warning', 'This purchase has already been returned.');
+            return back();
+        }
+
+        return view('admin.purchase.party.return.create',compact('party_purchase','item','showrooms','employees'));
+    }
+
     public function payment_list(purchase $party_purchase){
         $payments = Payment::where('source_of_payment','Party Purchase')->where('paymentable_id',$party_purchase->id)->orderBy('id','desc')->paginate(20);
 
@@ -343,7 +384,7 @@ class PartyPurchaseController extends Controller
 
     public function invoice($purchase_id){
         $purchase  = purchase::findOrFail($purchase_id);
-        return view('admin.purchase.invoice',compact('purchase'));
+        return view('admin.purchase.party.invoice',compact('purchase'));
     }
     
 }

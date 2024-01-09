@@ -14,6 +14,15 @@ use App\Models\Party;
 use App\Models\purchase;
 class ReceiveChallanController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('can:list-receive_challan', ['only' => ['index']]);
+        $this->middleware('can:create-receive_challan', ['only' => ['create']]);
+        $this->middleware('can:edit-receive_challan', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-receive_challan', ['only' => ['destroy']]);
+        $this->middleware('can:receive_challan_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:receive_challan_report', ['only' => ['report']]);
+    }
 
     public function index(){
         $challans =  ReceiveChallan::orderBy('id','desc')->paginate(20);
@@ -78,35 +87,6 @@ class ReceiveChallanController extends Controller
 
                     $challan->items()->create($data);
 
-                }elseif($variationCount > 0 && $request->item_variation_id[$key] ==''){
-                    
-                    $data      = [];
-                    $main_qty = 0;
-                    $sub_qty = 0;
-                    $qty = 0;
-                    $rate=0;
-                    $subTotal=0;
-
-                    $sub_qty = $request->related_by[$key] / $variationCount * $request->main_unit_qty[$key];
-                    $qty = $item->to_sub_quantity($main_qty, $sub_qty);
-                    $rate = $request->rate[$key] / $request->related_by[$key];
-                    $subTotal= $rate * $qty;
-                    
-                    $variations = ItemVariation::where('item_id', $item_id)->get();
-                    foreach ($variations as $variation) {
-                        $data['department_id'] = session('department');
-                        $data['purchase_item_id'] = $request->purchase_item_id[$key];
-                        $data['receive_challan_id'] = $challan->id;
-                        $data['item_id'] = $item_id;
-                        $data['item_variation_id'] = $variation->id;
-                        $data['details'] = $request->item_details[$key];
-                        $data['main_unit_qty'] = $main_qty;
-                        $data['sub_unit_qty'] = $sub_qty;
-                        $data['qty'] = $qty;
-                        $data['total_packages']=$request->total_packages[$key];
-                        $data['packaging_details']=$request->packaging_details[$key];
-                        $challan->items()->create($data);
-                    }
                 }else{
                     $data      = [];
                     $main_qty = 0;
@@ -133,8 +113,7 @@ class ReceiveChallanController extends Controller
 
             $challan->purchase->update_calculated_data();
             DB::commit();
-            return redirect()->route('receive-challan.index')->with('success', 'Data saved!');
-         
+            return redirect()->route('receive-challan.index')->with('success', 'Receive Challan successful!');
 
         } catch (\Exception $e) {
             DB::rollback();

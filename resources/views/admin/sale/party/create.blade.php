@@ -270,7 +270,7 @@
                                         <tr style="width: 100%">
                                             <th class="text-end" style="width: 70%;font-size: 15px">Total Commission :</th>
                                             <th>
-                                                <input type="text" name="total_commission" id="input_commission" class="form-control form-control-sm" readonly>
+                                                <input type="text" name="total_commission" id="input_commission" class="form-control form-control-sm">
                                             </th>
                                         </tr>
 
@@ -291,7 +291,6 @@
 
 
 @section('extra_js')
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -315,7 +314,6 @@
                 todayHighlight: true,
             }).datepicker('update', new Date());
         });
-
     </script>
         
    @include('admin.sale.scripts')

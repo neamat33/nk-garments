@@ -113,7 +113,6 @@ class items extends Model
     // Convert all quantity to sub_unit quantity
     public function to_sub_quantity($main_quantity,$sub_quantity)
     {
-
         $main_unit=$this->main_unit;
 
         $related_by=1;
@@ -149,6 +148,15 @@ class items extends Model
     public function sale_count($size_id = null)
     {
         $qty = SaleItem::where('item_id', $this->id)->where('department_id', session('department'));
+        if ($size_id != null) {
+            $qty = $qty->where('item_variation_id', $size_id);
+        }
+        return $qty->sum('qty');
+    }
+
+    public function sale_return_count($size_id = null)
+    {
+        $qty = SaleReturnItem::where('item_id', $this->id)->where('department_id', session('department'));
         if ($size_id != null) {
             $qty = $qty->where('item_variation_id', $size_id);
         }
@@ -208,8 +216,39 @@ class items extends Model
 
     public function stock()
     {
-        $stock = $this->receive_challan_count() - $this->sale_count() - $this->delivery_challan_count();
+        $stock = $this->receive_challan_count() - $this->sale_count() + $this->sale_return_count() - $this->delivery_challan_count();
         return  $stock > 0 ? $stock : 0;
+    }
+
+    public function production_count(){
+        $qty = BulkSendDetail::where('item_id', $this->id);
+        return([
+            'qty'=>$qty->sum('qty'),
+            'cone'=>$qty->sum('cone'),
+        ]);
+    }
+    public function purchase_raw_count($size_id = null)
+    {
+        $qty = PurchaseItem::where('item_id', $this->id)->where('department_id', session('department'));
+        
+        return([
+            'qty'=>$qty->sum('weight_qty'),
+            'cone'=>$qty->sum('cone_qty'),
+        ]);
+    }
+
+    public function raw_stock(){
+        $bulk_send = $this->production_count();
+        $purchase_raw = $this->purchase_raw_count();
+
+
+        $qty = $purchase_raw['qty'] - $bulk_send['qty'];
+        $cone = $purchase_raw['cone'] - $bulk_send['cone'];
+
+        return([
+            'qty'=>$qty,
+            'cone'=>$cone,
+        ]);
     }
 
     public function update_total_sale()

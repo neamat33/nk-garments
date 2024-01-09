@@ -19,6 +19,8 @@
                                     <th><strong>Party Name</strong></th>
                                     <th><strong>Email</strong></th>
                                     <th><strong>Mobile Phone</strong></th>
+                                    <th><strong>Sale Due</strong></th>
+                                    <th><strong>Purchase Due</strong></th>
                                     <th><strong>Action</strong></th>
                                 </tr>
                             </thead>
@@ -32,15 +34,18 @@
                                     <td>{{$item->party_name}}</td>
                                     <td>{{$item->email}}</td>
                                     <td>{{$item->phone}}</td>
+                                    <td>{{$item->sale_due()}}</td>
+                                    <td>{{$item->purchase_due()}}</td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-primary dropdown-toggle"
                                                 data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
                                                 {{-- <a class="dropdown-item" href="">Edit</a> --}}
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal"
-                                                    data-bs-target=".delete-modal"
-                                                    onclick="handle({{ $item->id }})">Delete</a>
+                                                @can('delete-party')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $item->id }})"><i class="fas fa-trash"></i> Delete
+                                                </a>
+                                                @endcan
                                             </div>
                                         </div>
                                     </td>

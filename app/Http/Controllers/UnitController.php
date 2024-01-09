@@ -6,6 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Unit;
 class UnitController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('can:list-unit', ['only' => ['index']]);
+        $this->middleware('can:create-unit',  ['only' => ['create', 'store']]);
+        $this->middleware('can:edit-unit',  ['only' => ['edit', 'update']]);
+        $this->middleware('can:delete-unit', ['only' => ['destroy']]);
+    }
+
     public function index(){
 
     }

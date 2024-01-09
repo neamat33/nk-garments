@@ -112,7 +112,7 @@
                             <tbody>
                                 <tr>
                                     <td class="left"><strong>Total :</strong></td>
-                                    <td class="right">BDT {{ number_format($party_sale->final_receivable,2) }}</td>
+                                    <td class="right">BDT {{ number_format($party_sale->items->sum('sub_total'),2) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="left"><strong>Total Discount :</strong></td>
@@ -122,9 +122,15 @@
                                     <td class="left"><strong>Total Commission :</strong></td>
                                     <td class="right">BDT {{ number_format($party_sale->total_commission,2) }}</td>
                                 </tr>
+                                @if($party_sale->returned_amount > 0)
+                                <tr>
+                                    <td class="left"><strong class="text-danger">Return Amount :</strong></td>
+                                    <td class="right text-danger">BDT {{ number_format($party_sale->returned_amount,2) }}</td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <td class="left"><strong>Grand Total :</strong></td>
-                                    <td class="right">BDT {{ number_format($party_sale->receivable,2) }}</td>
+                                    <td class="right">BDT {{ number_format($party_sale->final_receivable,2) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="left"><strong>Total Paid :</strong></td>

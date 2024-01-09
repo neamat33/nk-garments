@@ -112,8 +112,13 @@
                                     <td class="right">BDT {{ number_format($purchase->items->sum('sub_total'),2) }}</td>
                                 </tr>
                                 <tr>
+                                    <td class="left"><strong class="text-danger">Return Amount :</strong></td>
+                                    <td class="right text-danger">BDT {{ number_format($purchase->returned_amount,2) }}</td>
+                                </tr>
+
+                                <tr>
                                     <td class="left"><strong>Grand Total :</strong></td>
-                                    <td class="right">BDT {{ number_format($purchase->payable,2) }}</td>
+                                    <td class="right">BDT {{ number_format($purchase->final_payable,2) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="left"><strong>Total Paid :</strong></td>

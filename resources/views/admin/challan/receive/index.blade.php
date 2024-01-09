@@ -40,8 +40,14 @@
                                        <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                 <a class="dropdown-item" href="{{ route('receive-challan.invoice',$challan->id) }}">Invoice</a>
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $challan->id }})">Delete</a>
+                                                @can('receive_challan_invoice')
+                                                <a class="dropdown-item" href="{{ route('receive-challan.invoice',$challan->id) }}">
+                                                <i class="fas fa-print"></i> Invoice</a>
+                                                @endcan
+                                                
+                                                @can('delete-receive_challan')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $challan->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
                                    </td>

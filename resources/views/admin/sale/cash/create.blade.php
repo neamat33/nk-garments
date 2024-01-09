@@ -253,13 +253,13 @@
                                         <tr style="width: 100%">
                                             <th class="text-end" style="width: 70%;font-size: 15px">Total Commission :</th>
                                             <th>
-                                                <input type="text" name="total_commission" id="input_commission" class="form-control form-control-sm" readonly>
+                                                <input type="text" name="total_commission" id="input_commission" class="form-control form-control-sm">
                                             </th>
                                         </tr>
                                         <tr style="width: 100%">
                                             <th class="text-end" style="width: 70%;font-size: 15px">Paid Amount <span class="text-danger">*</span>:</th>
                                             <th>
-                                                <input type="text" name="pay_amount" id="pay_amount" class="form-control form-control-sm" step="any" readonly>
+                                                <input type="text" name="pay_amount" id="pay_amount" class="form-control form-control-sm" step="any" >
                                             </th>
                                         </tr>
 

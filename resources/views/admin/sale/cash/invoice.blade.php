@@ -123,9 +123,15 @@
                                     <td class="left"><strong>Total Commission :</strong></td>
                                     <td class="right">BDT {{ number_format($sales->total_commission,2) }}</td>
                                 </tr>
+                                @if($sales->returned_amount > 0)
+                                <tr>
+                                    <td class="left"><strong class="text-danger">Return Amount :</strong></td>
+                                    <td class="right text-danger">BDT {{ number_format($sales->returned_amount,2) }}</td>
+                                </tr>
+                                @endif
                                 <tr>
                                     <td class="left"><strong>Grand Total :</strong></td>
-                                    <td class="right">BDT {{ number_format($sales->receivable,2) }}</td>
+                                    <td class="right">BDT {{ number_format($sales->final_receivable,2) }}</td>
                                 </tr>
                                 <tr>
                                     <td class="left"><strong>Total Paid :</strong></td>

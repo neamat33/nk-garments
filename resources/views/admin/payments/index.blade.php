@@ -107,7 +107,9 @@
                                        <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $payment->id }})">Delete</a>
+                                                @can('delete-payment')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $payment->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
                                    </td>

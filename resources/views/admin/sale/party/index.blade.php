@@ -2,19 +2,20 @@
 @section('extra_css')
 <link href="{{asset('asset/vendor/bootstrap-daterangepicker/daterangepicker.css')}}" rel="stylesheet">
 <style>
-      @media print {
-            body * {
-                visibility: visible !important;
-                color:#000 !important;
-            }
-
-            h4.card-title{
-                color:#000 !important;   
-            }
-            .print_hidden{
-                display: none !important;
-            }
+    @media print {
+        body * {
+            visibility: visible !important;
+            color: #000 !important;
         }
+
+        h4.card-title {
+            color: #000 !important;
+        }
+
+        .print_hidden {
+            display: none !important;
+        }
+    }
 </style>
 @endsection
 @section('content')
@@ -30,7 +31,8 @@
                                 <select name="party_id" id="select2-dropdown" class="form-control">
                                     <option value="">Select Party Name</option>
                                     @foreach($parties as $party)
-                                    <option value="{{$party->id}}" {{ request('party_id')==$party->id?'SELECTED':'' }}>{{$party->party_name}}</option>
+                                    <option value="{{$party->id}}" {{ request('party_id')==$party->id?'SELECTED':''
+                                        }}>{{$party->party_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -38,22 +40,25 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Sale Date</strong></label>
-                                <input class="form-control input-daterange-datepicker" type="text" name="sale_date" autocomplete="off" value="{{ request('sale_date') }}">
+                                <input class="form-control input-daterange-datepicker" type="text" name="sale_date"
+                                    autocomplete="off" value="{{ request('sale_date') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Delivery Date</strong></label>
-                                <input class="form-control input-daterange-datepicker" type="text" name="delivery_date" autocomplete="off" value="{{ request('delivery_date') }}">
+                                <input class="form-control input-daterange-datepicker" type="text" name="delivery_date"
+                                    autocomplete="off" value="{{ request('delivery_date') }}">
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Showroom</strong></label>
                                 <select name="showroom" id="" class="form-control">
                                     <option value="">Select Showroom</option>
                                     @foreach($showrooms as $showroom)
-                                    <option value="{{$showroom->name}}" {{ request('showroom')==$showroom->name?'SELECTED':'' }}>{{$showroom->name}}</option>
+                                    <option value="{{$showroom->name}}" {{ request('showroom')==$showroom->
+                                        name?'SELECTED':'' }}>{{$showroom->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -64,31 +69,36 @@
                                 <select name="sold_by" id="" class="form-control">
                                     <option value="">Select Sold By</option>
                                     @foreach($employees as $employee)
-                                    <option value="{{$employee->id}}" {{ request('sold_by')==$employee->id?'SELECTED':'' }}>{{$employee->employee_name}}</option>
+                                    <option value="{{$employee->id}}" {{ request('sold_by')==$employee->id?'SELECTED':''
+                                        }}>{{$employee->employee_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Order By</strong></label>
                                 <select name="order_by" id="" class="form-control">
                                     <option value="">Select Order By</option>
                                     @foreach($employees as $employee)
-                                    <option value="{{$employee->id}}" {{ request('order_by')==$employee->id?'SELECTED':'' }}>{{$employee->employee_name}}</option>
+                                    <option value="{{$employee->id}}" {{ request('order_by')==$employee->
+                                        id?'SELECTED':'' }}>{{$employee->employee_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div> 
+                        </div>
                     </div>
                     <div class="row text-end">
-                          <div class="col-md-12">
-                            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-search"></i> Filter</button>
-                            <a href="{{ request()->url() }}" class="btn btn-warning btn-sm"><i class="fa fa-refresh"></i> Reset</a>
-                            <button class="btn btn-primary btn-sm print_hidden print_button" onclick="print_receipt('print-area')"> 
-                            <i class="fa fa-print"></i> Print
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-search"></i>
+                                Filter</button>
+                            <a href="{{ request()->url() }}" class="btn btn-warning btn-sm"><i
+                                    class="fa fa-refresh"></i> Reset</a>
+                            <button class="btn btn-primary btn-sm print_hidden print_button"
+                                onclick="print_receipt('print-area')">
+                                <i class="fa fa-print"></i> Print
                             </button>
-                        </div>   
+                        </div>
                     </div>
                 </div>
             </form>
@@ -103,59 +113,100 @@
                         <table class="table table-responsive-md">
                             <thead>
                                 <tr>
-                                   <th class="width80"><strong>#</strong></th>
-                                   <th><strong>Sale Type</strong></th>
-                                   <th><strong>Party Name</strong></th>
-                                   <th><strong>Sale Date</strong></th>
-                                   <th><strong>Ordered By</strong></th>
-                                   <th><strong>Delivery Date</strong></th>
-                                   <th><strong>Delivery To</strong></th>
-                                   <th><strong>Sold By</strong></th>
-                                   <th><strong>Status</strong></th>
-                                   <th><strong>Total Price</strong></th>
-                                   <th><strong>Total Paid</strong></th>
-                                   <th><strong>Due</strong></th>
-                                   <th class="print_hidden"><strong>Action</strong></th>
+                                    <th class="width80"><strong>#</strong></th>
+                                    <th><strong>Sale Type</strong></th>
+                                    <th><strong>Party Name</strong></th>
+                                    <th><strong>Sale Date</strong></th>
+                                    <th><strong>Ordered By</strong></th>
+                                    <th><strong>Delivery Date</strong></th>
+                                    <th><strong>Delivery To</strong></th>
+                                    <th><strong>Sold By</strong></th>
+                                    <th><strong>Status</strong></th>
+                                    <th><strong>Total Price</strong></th>
+                                    <th><strong>Total Paid</strong></th>
+                                    <th><strong>Due</strong></th>
+                                    <th class="print_hidden"><strong>Action</strong></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $i=1; @endphp
                                 @foreach ($sales as $sale)
                                 <tr>
-                                   <td><strong>{{$sale->id}}</strong></td>
-                                   <td>{{ $sale->sale_type}}</td>
-                                   <td>{{ $sale->party->party_name}}</td>
-                                   <td>{{date('d M, Y', strtotime($sale->sale_date))}}</td>
-                                   <td>{{ $sale->order_by_employee->employee_name}}</td>
-                                   <td>{{date('d M, Y', strtotime($sale->delivery_date))}}</td>
-                                   <td>{{$sale->delivery_to}}</td>
-                                   <td>{{$sale->sold_by_employee->employee_name}}</td>
-                                   <td>
-                                    <span class="badge light badge-{{ $sale->delivery_status == 'Delivered' ? 'success' : 'warning' }}">
-                                        {{ $sale->delivery_status }}
-                                    </span>
-
-                                   </td>
-                                   <td>{{$sale->receivable}}</td>
-                                   <td>{{$sale->paid}}</td>
-                                   <td>{{$sale->due}}</td>
-                                   <td class="print_hidden">
-                                       <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
+                                    <td><strong>{{$sale->id}}</strong></td>
+                                    <td>{{ $sale->sale_type}}</td>
+                                    <td>{{ $sale->party->party_name}}</td>
+                                    <td>{{date('d M, Y', strtotime($sale->sale_date))}}</td>
+                                    <td>{{ $sale->order_by_employee->employee_name}}</td>
+                                    <td>{{date('d M, Y', strtotime($sale->delivery_date))}}</td>
+                                    <td>{{$sale->delivery_to}}</td>
+                                    <td>{{$sale->sold_by_employee->employee_name}}</td>
+                                    <td>
+                                        <span
+                                            class="badge light badge-{{ $sale->delivery_status == 'Delivered' ? 'success' : ($sale->delivery_status == 'Full Return' ? 'danger' : 'primary') }}">
+                                            {{ $sale->delivery_status }}
+                                        </span>
+                                    </td>
+                                    <td>{{$sale->final_receivable}}</td>
+                                    <td>{{$sale->paid}}</td>
+                                    <td>{{$sale->due}}</td>
+                                    <td class="print_hidden">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary dropdown-toggle"
+                                                data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('party-sale.invoice',$sale->id) }}">Invoice</a>
+                                                @can('party_sale_invoice')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('party-sale.invoice',$sale->id) }}">
+                                                    <i class="fas fa-print"></i> Invoice
+                                                </a>
+                                                @endcan
+
                                                 @if ($sale->delivery_status =="Not Delivered")
-                                                <a class="dropdown-item" href="{{ route('party-sale.edit',$sale->id) }}">Edit</a>
-                                                <a class="dropdown-item" href="{{ route('challan.delivery',$sale->id) }}">Create Challan</a>
+                                                @can('edit-party_sale')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('party-sale.edit',$sale->id) }}">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                @endcan
+
+                                                @can('create-delivery_challan')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('challan.delivery',$sale->id) }}">
+                                                    <i class="fas fa-plus-circle"></i> Create Challan
+                                                </a>
+                                                @endcan
                                                 @endif
+
+                                                @can('create-party_sale_return')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('party-sale.return',$sale->id) }}">
+                                                    <i class="fas fa-undo"></i> Return Sale
+                                                </a>
+                                                @endcan
+
+                                                @can('party_sale_add_payment')
                                                 @if ($sale->due > 0)
-                                                <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $sale->id }}" id="add-payment" data-bs-target="#payment-modal">Add Payment</a>
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                    data-bs-toggle="modal" data-id="{{ $sale->id }}" id="add-payment"
+                                                    data-bs-target="#payment-modal"><i
+                                                        class="fas fa-money-check-alt"></i> Add Payment</a>
                                                 @endif
-                                                <a class="dropdown-item" href="{{ route('party-sale.payment_list',$sale->id) }}">Payment List</a>
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $sale->id }})">Delete</a>
+                                                @endcan
+
+                                                @can('party_sale_payment_list')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('party-sale.payment_list',$sale->id) }}">
+                                                    <i class="fas fa-money-bill-alt"></i> Payments List</a>
+                                                @endcan
+
+                                                @can('delete-party_sale')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal"
+                                                    data-bs-target=".delete-modal" onclick="handle({{ $sale->id }})"><i
+                                                        class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
-                                   </td>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

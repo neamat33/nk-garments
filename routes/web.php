@@ -12,16 +12,29 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PartyPurchaseController;
 use App\Http\Controllers\PettyPurchaseController;
+use App\Http\Controllers\PurchaseReturnController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\WastageSaleController;
-use App\Http\Controllers\CashSaleController;
 use App\Http\Controllers\PartySaleController;
+use App\Http\Controllers\PartySaleCommissionController;
+use App\Http\Controllers\PartySalePaymentController;
+use App\Http\Controllers\CashSaleController;
+use App\Http\Controllers\WastageSaleController;
+use App\Http\Controllers\PartySaleReturnController;
+use App\Http\Controllers\SaleReturnController;
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BulkSendController;
+use App\Http\Controllers\KnittingController;
+use App\Http\Controllers\CuttingController;
+use App\Http\Controllers\ProductionSendController;
+use App\Http\Controllers\ProductionReceiveController;
+use App\Http\Controllers\TpProductionSendController;
+use App\Http\Controllers\TpProductionReceiveController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,6 +96,29 @@ Route::group(['middleware' => ['auth', 'is_department_selected']], function () {
 
     /**
      * *********************
+     * Production
+     * *********************
+    */ 
+    Route::resource('bulk_send', BulkSendController::class);
+    Route::resource('knitting', KnittingController::class);
+    Route::resource('cutting', CuttingController::class);
+    Route::resource('production_send', ProductionSendController::class);
+    Route::resource('production_receive', ProductionReceiveController::class);
+    // Third Party Production
+    Route::resource('tp_production_send', TpProductionSendController::class); 
+    Route::resource('tp_production_receive', TpProductionReceiveController::class); 
+    Route::get('tp_production_receive-stock', [TpProductionReceiveController::class,'stock_report'])->name('tp_production_receive.stock');
+    Route::get('getSendInfo', [TpProductionReceiveController::class,'getSendInfo']);
+
+    Route::get('cutting/print/{id}', [CuttingController::class,'print'])->name('cutting.print');
+    Route::get('production_send/print/{id}', [ProductionSendController::class,'print'])->name('production_send.print');
+    Route::get('production_receive/print/{id}', [ProductionReceiveController::class,'print'])->name('production_receive.print');
+    Route::get('cutting-report', [CuttingController::class,'report'])->name('cutting.report');
+    Route::get('knitting-stock', [KnittingController::class,'stock_report'])->name('knitting.stock');
+
+
+    /**
+     * *********************
      * Purchase
      * *********************
     */
@@ -94,12 +130,19 @@ Route::group(['middleware' => ['auth', 'is_department_selected']], function () {
     Route::get('challan-receive/{purchase}',[PartyPurchaseController::class,'challan_receive'])->name('challan.receive');
     Route::get('party/purchase/report',[PartyPurchaseController::class,'report'])->name('party-purchase.report');
     Route::get('party/purchase/invoice/{purchase_id}',[PartyPurchaseController::class,'invoice'])->name('party-purchase.invoice');
+    Route::get('party/purchase/create-return/{party_purchase}',[PartyPurchaseController::class,'return_purchase'])->name('party-purchase.return');
+
+    Route::get('party/purchase/return/list',[PurchaseReturnController::class,'party_index'])->name('party-purchase-return.index');
+    Route::get('petty/purchase/return/list',[PurchaseReturnController::class,'petty_index'])->name('petty-purchase-return.index');
+    Route::post('purchase/return/store',[PurchaseReturnController::class,'store'])->name('purchase-return.store');
+    Route::delete('purchase/return/delete/{purchase_return}',[PurchaseReturnController::class,'destroy'])->name('purchase-return.destroy');
 
     Route::resource('petty-purchase', PettyPurchaseController::class)->except(['show']);
-    Route::get('petty-purchase/payment/list/{party_purchase}',[PettyPurchaseController::class,'payment_list'])->name('petty-purchase.payment_list');
+    Route::get('petty-purchase/payment/list/{petty_purchase}',[PettyPurchaseController::class,'payment_list'])->name('petty-purchase.payment_list');
     Route::post('petty-purchase/payment/by_invoice',[PettyPurchaseController::class,'by_invoice'])->name('petty-purchase.invoice_payment');
     Route::get('petty/purchase/report',[PettyPurchaseController::class,'report'])->name('petty-purchase.report');
     Route::get('petty/purchase/invoice/{purchase_id}',[PettyPurchaseController::class,'invoice'])->name('petty-purchase.invoice');
+    Route::get('petty/purchase/create-return/{petty_purchase}',[PettyPurchaseController::class,'return_purchase'])->name('petty-purchase.return');
 
     /**
      * *********************
@@ -114,15 +157,33 @@ Route::group(['middleware' => ['auth', 'is_department_selected']], function () {
     Route::get('party-sale/{id}',[PartySaleController::class,'get_sale']);
     Route::get('challan-delivery/{party_sale}',[PartySaleController::class,'challan_delivery'])->name('challan.delivery');
     Route::get('party-sale/invoice/{sale_id}',[PartySaleController::class,'invoice'])->name('party-sale.invoice');
+    Route::get('party-sale/create-return/{party_sale}',[PartySaleController::class,'return_sale'])->name('party-sale.return');
+
+    Route::get('party-sale/return/list',[PartySaleReturnController::class,'index'])->name('party-sale-return.index');
+    Route::post('party-sale/return/store',[PartySaleReturnController::class,'store'])->name('party-sale-return.store');
+    Route::delete('party-sale/return/delete/{sale_return}',[PartySaleReturnController::class,'destroy'])->name('party-sale-return.destroy');
+
+    Route::resource('party-sale-commission', PartySaleCommissionController::class)->except(['show']);
+    Route::get('party-sale/total-qty/{partyId}', [PartySaleCommissionController::class, 'get_total_qty']);
+
+    Route::resource('party-sale-payment', PartySalePaymentController::class)->except(['show']);
+    Route::get('party-sale/total-due-invoice/{partyId}', [PartySalePaymentController::class, 'get_total_due_invoice']);
 
     Route::resource('cash-sale', CashSaleController::class)->except(['show']);
     Route::get('cash-sale/report',[CashSaleController::class,'report'])->name('cash-sale.report');
+    Route::get('cash-sale/payment/list/{cash_sale}',[CashSaleController::class,'payment_list'])->name('cash-sale.payment_list');
     Route::post('cash-sale/payment/by_invoice',[CashSaleController::class,'by_invoice'])->name('cash-sale.invoice_payment');
     Route::get('cash-sale/{id}',[CashSaleController::class,'get_sale']);
     Route::get('cash-sale/invoice/{sale_id}',[CashSaleController::class,'invoice'])->name('cash-sale.invoice');
+    Route::get('cash-sale/create-return/{cash_sale}',[CashSaleController::class,'return_sale'])->name('cash-sale.return');
+
+    Route::get('cash-sale/return/list',[SaleReturnController::class,'index'])->name('cash-sale-return.index');
+    Route::post('cash-sale/return/store',[SaleReturnController::class,'store'])->name('cash-sale-return.store');
+    Route::delete('cash-sale/return/delete/{sale_return}',[SaleReturnController::class,'destroy'])->name('cash-sale-return.destroy');
 
     Route::resource('wastage-sale', WastageSaleController::class)->except(['show']);
     Route::get('wastage-sale/report',[WastageSaleController::class,'report'])->name('wastage-sale.report');
+    Route::get('wastage-sale/payment/list/{wastage_sale}',[WastageSaleController::class,'payment_list'])->name('wastage-sale.payment_list');
     Route::post('wastage-sale/payment/by_invoice',[WastageSaleController::class,'by_invoice'])->name('wastage-sale.invoice_payment');
     Route::get('wastage-sale/{id}',[WastageSaleController::class,'get_sale']);
     Route::get('wastage-sale/invoice/{sale_id}',[WastageSaleController::class,'invoice'])->name('wastage-sale.invoice');
@@ -168,10 +229,21 @@ Route::group(['middleware' => ['auth', 'is_department_selected']], function () {
     Route::resource('roles', RoleController::class);
     Route::resource('user', UserController::class);
     Route::resource('permission', PermissionController::class);
+    
     Route::get('setting',[SettingController::class, 'setting'])->name('setting');
     Route::post('setting/update',[SettingController::class, 'update_setting'])->name('update_setting');
 
+    /**
+     * *********
+     * Profile
+     * *********
+    */
+    Route::get('profile',[ProfileController::class, 'index'])->name('profile.index');
+    Route::post('profile',[ProfileController::class, 'update'])->name('profile.update');
+    Route::get('change-password',[ProfileController::class, 'change_password'])->name('change.password');
+    Route::post('update-password',[ProfileController::class, 'update_password'])->name('update.password');
 });
+
 Route::get('/update-all', function () {
 $allData = App\Models\items::all();
     foreach ($allData as $data){

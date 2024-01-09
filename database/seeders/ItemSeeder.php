@@ -38,6 +38,7 @@ class ItemSeeder extends Seeder
             'image' =>'asset/placeholder_190x140c.png',
             'unit_price' => $faker->numberBetween(400, 500),
             'unit_price_for_salary' => $faker->numberBetween(500, 1000),
+            'costing_type' => 1,
             'main_unit_id' => 2,
             'sub_unit_id' => 1,
             // 'stock' => 0,

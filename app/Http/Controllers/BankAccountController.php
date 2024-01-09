@@ -12,6 +12,15 @@ use App\Models\Payment;
 class BankAccountController extends Controller
 {
 
+    public function __construct()
+    {
+        $this->middleware('can:list-bank_account', ['only' => ['index']]);
+        $this->middleware('can:create-bank_account',  ['only' => ['create', 'store']]);
+        $this->middleware('can:edit-bank_account',  ['only' => ['edit', 'update']]);
+        $this->middleware('can:delete-bank_account', ['only' => ['destroy']]);
+        $this->middleware('can:bank_account-history', ['only' => ['history']]);
+    }
+
     public function paginate($items, $perPage = 15, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);

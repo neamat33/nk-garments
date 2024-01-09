@@ -24,6 +24,16 @@
                                         <span class="invalid-feedback">{{ $errors->first('type') }}</span>
                                 @endif
                             </div>
+                            <div class="">
+                                <label class="form-label">Product Type:</label>
+                                <select class="default-select size-2 form-control wide mb-3" id="product_type" name="product_type">
+                                    <option value="0">Finish Product</option>
+                                    <option value="1">Raw Product</option>
+                                </select>
+                                @if($errors->has('type'))
+                                        <span class="invalid-feedback">{{ $errors->first('type') }}</span>
+                                @endif
+                            </div>
                             
                             <div class="mb-3">
                                 <label class="form-label">Name<span class="text-danger">*</span> :</label>
@@ -93,33 +103,33 @@
                                     <span class="invalid-feedback">{{ $errors->first('roll') }}</span>
                                 @endif
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Main Unit<span class="text-danger">*</span> :</label>
-                                <select name="main_unit_id" id="" class="form-control main_unit">
-                                    @foreach ($units as $item)
-                                        <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                    @endforeach
-                                </select>
-                                @if($errors->has('main_unit_id'))
-                                    <span class="invalid-feedback">{{ $errors->first('main_unit_id') }}</span>
-                                @endif
-                            </div>
-    
-                            <div class="mb-3">
-                                <label class="form-label">Sub Unit</label>
-                                <select name="sub_unit_id" id="" class="form-control sub_unit">
-                                    @if($first_unit->related_unit)
-                                        <option value="{{ $first_unit->related_unit->id }}">{{ $first_unit->related_unit->name }}</option>
-                                    @else
-                                        <option value="">No Related Unit Found</option>
+                            <div id="for_finish">
+                                <div class="mb-3">
+                                    <label class="form-label">Main Unit<span class="text-danger">*</span> :</label>
+                                    <select name="main_unit_id" id="" class="form-control main_unit">
+                                        @foreach ($units as $item)
+                                            <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @if($errors->has('main_unit_id'))
+                                        <span class="invalid-feedback">{{ $errors->first('main_unit_id') }}</span>
                                     @endif
-                                </select>
-                                @if($errors->has('sub_unit_id'))
-                                    <span class="invalid-feedback">{{ $errors->first('sub_unit_id') }}</span>
-                                @endif
-                            </div>
+                                </div>
         
+                                <div class="mb-3">
+                                    <label class="form-label">Sub Unit</label>
+                                    <select name="sub_unit_id" id="" class="form-control sub_unit">
+                                        @if($first_unit->related_unit)
+                                            <option value="{{ $first_unit->related_unit->id }}">{{ $first_unit->related_unit->name }}</option>
+                                        @else
+                                            <option value="">No Related Unit Found</option>
+                                        @endif
+                                    </select>
+                                    @if($errors->has('sub_unit_id'))
+                                        <span class="invalid-feedback">{{ $errors->first('sub_unit_id') }}</span>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">Finished :</label>
                                 <input type="text" class="form-control input-rounded" placeholder="Finished" name="finished">
@@ -252,10 +262,31 @@
                                     <span class="invalid-feedback">{{ $errors->first('unit_price_for_salary') }}</span>
                                 @endif
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">Costing Unit<span class="text-danger">*</span> :</label>
+                                <select class="form-control wide mb-3" name="costing_unit" required>
+                                    <option value="" disabled selected>Select Unit</option>
+                                    <option value="kg">Kg</option>
+                                    <option value="pc">Pc</option>
+                                </select>
+                                @if($errors->has('costing_unit'))
+                                    <span class="invalid-feedback">{{ $errors->first('costing_unit') }}</span>
+                                @endif
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Costing Type<span class="text-danger">*</span> :</label>
+                                <select class="form-control wide mb-3" name="costing_type" required>
+                                    <option value="1">Receive</option>
+                                    <option value="2">Send</option>
+                                </select>
+                                @if($errors->has('costing_type'))
+                                    <span class="invalid-feedback">{{ $errors->first('costing_type') }}</span>
+                                @endif
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Note</label>
-                                <textarea name="note" id="" cols="30" rows="7" class="form-control"`></textarea>
+                                <textarea name="note" id="" cols="30" rows="3" class="form-control"`></textarea>
                                 @if($errors->has('note'))
                                     <span class="invalid-feedback">{{ $errors->first('note') }}</span>
                                 @endif
@@ -323,6 +354,15 @@ $(document).ready(()=>{
           reader.readAsDataURL(file);
         }
       });
+      $("#product_type").change(function(){
+         let type = $("#product_type").val();
+         if(type == 1){
+            $("#for_finish").hide();
+         }else{
+            $("#for_finish").show();
+         }
+          
+      })
     });
 </script>
 

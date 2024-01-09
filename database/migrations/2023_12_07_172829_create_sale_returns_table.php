@@ -18,10 +18,14 @@ return new class extends Migration
             $table->string('customer_name')->nullable();
             $table->text('customer_address')->nullable();
             $table->string('phone')->nullable();
+            $table->string('sale_type')->nullable();
+            $table->date('sale_date')->nullable();
             $table->dateTime('return_date')->nullable();
-            $table->integer('total_qty')->default(0);
-            $table->decimal('return_item_value', 12, 2);
-            $table->decimal('calculated_discount', 10, 2);
+            $table->integer('return_qty')->default(0);
+            $table->decimal('return_discount', 10, 2)->nullable();
+            $table->decimal('return_commission', 10, 2)->nullable();
+            $table->decimal('return_amount', 12, 2)->default(0);
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

@@ -12,12 +12,26 @@ use App\Models\items;
 use App\Models\ItemVariation;
 use App\Models\Branch;
 use App\Models\Party;
+use App\Models\Payment;
 use Redirect,Response;
 class WastageSaleController extends Controller
 {
      /**
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        $this->middleware('can:list-wastage_sale', ['only' => ['index']]);
+        $this->middleware('can:create-wastage_sale', ['only' => ['create']]);
+        $this->middleware('can:edit-wastage_sale', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-wastage_sale', ['only' => ['destroy']]);
+        $this->middleware('can:wastage_sale_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:wastage_sale_report', ['only' => ['report']]);
+        $this->middleware('can:wastage_sale_add_payment', ['only' => ['by_invoice']]);
+        $this->middleware('can:wastage_sale_payment_list', ['only' => ['payment_list']]);
+    }
+
     public function index(Request $request)
     {
         $sales = new Sale();
@@ -53,7 +67,7 @@ class WastageSaleController extends Controller
             'delivery_date' => 'required|date|date_format:Y-m-d',
             'sale_date' => 'required|date|date_format:Y-m-d',
             'sold_by' => 'required',
-            'receivable' =>'required',
+            // 'receivable' =>'required',
         ]);
 
         try {
@@ -72,8 +86,8 @@ class WastageSaleController extends Controller
                 'sold_by'          => $request->sold_by,
                 'note'             => $request->note,
                 'total_discount'   => $request->total_discount,
-                'receivable'       => $request->receivable,
-                'final_receivable' => $request->receivable,
+                // 'receivable'       => $request->receivable,
+                // 'final_receivable' => $request->receivable,
             ]);
 
             
@@ -219,7 +233,7 @@ class WastageSaleController extends Controller
             $sale->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'data saved!');
+            return back()->with('success', 'Wastage sale successfully!');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -308,7 +322,7 @@ class WastageSaleController extends Controller
             $wastage_sale->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'Data updated!');
+            return back()->with('success', 'Wastage Sale successful!');
         } catch (\Exception $e) {
             DB::rollback();
             info($e);
@@ -400,6 +414,11 @@ class WastageSaleController extends Controller
         })->orderBy('id', 'desc')->paginate(20);
 
         return view('admin.sale.wastage.report',compact('sales'));
+    }
+
+    public function payment_list(Sale $wastage_sale){
+        $payments = Payment::where('source_of_payment','Wastage Sale')->where('paymentable_id',$wastage_sale->id)->orderBy('id','desc')->paginate(20);
+        return view('admin.sale.wastage.payment-list',compact('payments'));
     }
 
     public function invoice($sale_id){

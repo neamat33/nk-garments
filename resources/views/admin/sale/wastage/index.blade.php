@@ -130,12 +130,32 @@
                                        <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('wastage-sale.invoice',$sale->id) }}">Invoice</a>
-                                                <a class="dropdown-item" href="{{ route('wastage-sale.edit',$sale->id) }}">Edit</a>
+                                                @can('wastage_sale_invoice')    
+                                                <a class="dropdown-item" href="{{ route('wastage-sale.invoice',$sale->id) }}">
+                                                    <i class="fas fa-print"></i> Invoice
+                                                </a>
+                                                @endcan
+                                                
+                                                @can('edit-wastage_sale')
+                                                <a class="dropdown-item" href="{{ route('wastage-sale.edit',$sale->id) }}">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </a>
+                                                @endcan
+
+                                                @can('wastage_sale_add_payment')
                                                 @if ($sale->due > 0)
-                                                <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $sale->id }}" id="add-payment" data-bs-target="#payment-modal">Add Payment</a>
+                                                <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $sale->id }}" id="add-payment" data-bs-target="#payment-modal"><i class="fas fa-money-check-alt"></i> Add Payment</a>
                                                 @endif
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $sale->id }})">Delete</a>
+                                                @endcan
+
+                                                 @can('wastage_sale_payment_list')
+                                                <a class="dropdown-item" href="{{ route('wastage-sale.payment_list',$sale->id) }}">
+                                                    <i class="fas fa-money-bill-alt"></i> Payments List</a>
+                                                @endcan
+                                                
+                                                @can('delete-wastage_sale')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $sale->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
                                    </td>

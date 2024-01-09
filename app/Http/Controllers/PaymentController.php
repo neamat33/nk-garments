@@ -10,6 +10,13 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
+    function __construct()
+    {
+        $this->middleware('can:list-payment', ['only' => ['index']]);
+        $this->middleware('can:create-payment', ['only' => ['create']]);
+        $this->middleware('can:delete-payment', ['only' => ['destroy']]);
+    }
+    
     public function index(Request $request)
     {
         $payments= new Payment();

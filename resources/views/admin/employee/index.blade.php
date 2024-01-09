@@ -45,7 +45,9 @@
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
                                                 {{-- <a class="dropdown-item" href="">Edit</a> --}}
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $item->id }})">Delete</a>
+                                                @can('delete-employee')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $item->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
                                     </td>

@@ -22,17 +22,25 @@ return new class extends Migration
             $table->date('delivery_date')->nullable();
             $table->string('delivery_to')->nullable();
             $table->integer('sold_by')->nullable();
-            $table->string('note')->nullable();
+            //return 
+            $table->decimal('returned_commission', 22, 2)->default(0);
+            $table->decimal('returned_discount', 22, 2)->default(0);
+            $table->decimal('returned_amount',22,2)->default(0);
+            $table->integer('returned_qty')->default(0);
+
+            $table->decimal('payment_discount', 22, 2)->nullable();
             $table->decimal('total_discount', 22, 2)->nullable();
+            $table->decimal('sale_commission', 22, 2)->nullable();
+            $table->decimal('add_commission', 22, 2)->nullable();
             $table->decimal('total_commission', 22, 2)->nullable();
             $table->decimal('receivable', 22, 2)->default(0);
-            $table->decimal('returned',22,2)->default(0);
             $table->decimal('final_receivable',22,2)->default(0);
             $table->decimal('paid',22,2)->default(0);
             $table->decimal('due',22,2)->default(0);
             $table->integer('total_qty')->default(0); 
             $table->integer('delivery_qty')->default(0);
             $table->integer('due_qty')->default(0);
+            $table->text('note')->nullable();
             $table->string('delivery_status')->nullable();
             $table->string('payment_status')->nullable();
             $table->timestamps();

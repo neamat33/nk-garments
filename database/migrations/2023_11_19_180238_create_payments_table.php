@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('department_id')->nullable();
+            $table->foreignId('party_sale_payment_id')->nullable()->references('id')->on('party_sale_payments')->onDelete('cascade');
             $table->integer('bank_account_id')->nullable();
             $table->date('payment_date')->nullable();
             $table->enum('payment_type', ['receive', 'pay']);
             $table->unsignedInteger('paymentable_id');
             $table->string('paymentable_type');
             $table->string('source_of_payment')->nullable();
+            $table->decimal('discount',22,2 )->nullable();
             $table->decimal('amount',22,2 )->nullable();
             $table->timestamps();
         });

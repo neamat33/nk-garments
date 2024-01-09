@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\BankAccount;
+use App\Models\Branch;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\items;
@@ -15,6 +16,19 @@ use App\Models\PurchaseItem;
 use App\Models\Payment;
 class PettyPurchaseController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('can:list-petty_purchase', ['only' => ['index']]);
+        $this->middleware('can:create-petty_purchase', ['only' => ['create']]);
+        $this->middleware('can:edit-petty_purchase', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-petty_purchase', ['only' => ['destroy']]);
+        $this->middleware('can:petty_purchase_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:petty_purchase_report', ['only' => ['report']]);
+        $this->middleware('can:petty_purchase_add_payment', ['only' => ['by_invoice']]);
+        $this->middleware('can:petty_purchase_payment_list', ['only' => ['payment_list']]);
+        $this->middleware('can:create-purchase_return', ['only' => ['return_purchase']]);
+    }
+    
     /**
      * Display a listing of the resource.
      */
@@ -186,7 +200,7 @@ class PettyPurchaseController extends Controller
             $purchase->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'data saved!');
+            return back()->with('success', 'Petty Purchase successful!');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -325,14 +339,27 @@ class PettyPurchaseController extends Controller
         return back();
     }
 
-    public function payment_list(purchase $party_purchase){
-        $payments = Payment::where('source_of_payment','Petty Purchase')->where('paymentable_id',$party_purchase->id)->orderBy('id','desc')->paginate(20);
+     public function return_purchase(purchase $petty_purchase){
+        $item = items::orderBy('id','desc')->get();
+        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
+        $employees =  Employee::orderBy('id','desc')->get();
+        
+        if($petty_purchase->purchase_return()->count() > 0){
+            session()->flash('warning', 'This sale has already been returned.');
+            return back();
+        }
+
+        return view('admin.purchase.petty.return.create',compact('petty_purchase','item','showrooms','employees'));
+    }
+
+    public function payment_list(purchase $petty_purchase){
+        $payments = Payment::where('source_of_payment','Petty Purchase')->where('paymentable_id',$petty_purchase->id)->orderBy('id','desc')->paginate(20);
 
         return view('admin.purchase.petty.payment-list',compact('payments'));
     }
 
     public function invoice($purchase_id){
         $purchase  = purchase::findOrFail($purchase_id);
-        return view('admin.purchase.invoice',compact('purchase'));
+        return view('admin.purchase.petty.invoice',compact('purchase'));
     }
 }

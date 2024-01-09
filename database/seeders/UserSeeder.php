@@ -15,7 +15,8 @@ class UserSeeder extends Seeder
         $user = User::create([
            'name' => 'Admin',
            'email' => 'admin@softghor.com',
-           'password' => bcrypt('admin')
+           'password' => bcrypt('admin'),
+           'image'    =>'asset/images/profile/1.jpg',
        ]);
 
        $user->assignRole('admin');
@@ -24,7 +25,8 @@ class UserSeeder extends Seeder
        $user = User::create([
             'name' => 'Test-Admin',
             'email' => 'test@softghor.com',
-            'password' => bcrypt('softghor1212')
+            'password' => bcrypt('softghor1212'),
+            'image'    =>'asset/images/profile/1.jpg',
         ]);
 
         $user->assignRole('admin');
@@ -33,7 +35,8 @@ class UserSeeder extends Seeder
             'name' => 'Operator',
             'email' => 'operator@softghor.com',
             'password' => bcrypt('operator'),
-            'department_id' =>1
+            'department_id' =>1,
+            'image'    =>'asset/images/profile/1.jpg',
         ]);
  
         $operator->assignRole('operator');

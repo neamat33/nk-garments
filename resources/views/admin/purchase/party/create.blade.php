@@ -165,7 +165,7 @@
                                             <select name="new_item[]" id="select2-dropdown" class="item-select">
                                                 <option value="">Select Item</option>
                                                 @foreach ($item as $val)
-                                                    <option value="{{ $val->id }}" data-details="{{ "Name: " . $val->name . ", Type: " . $val->type}}" data-mainunit-name="{{ $val->main_unit->name }}" data-subunit-name="{{ $val->sub_unit_name->name }}" data-subunit-related="{{ $val->unit_related_by->related_by }}" data-price="{{ $val->unit_price }}">{{ $val->name }}</option>
+                                                    <option value="{{ $val->id }}" data-details="{{ "Name: " . $val->name . ", Type: " . $val->type}}" data-product-type="{{ $val->product_type }}" data-mainunit-name="{{ $val->main_unit->name }}" data-subunit-name="{{ $val->sub_unit_name->name }}" data-subunit-related="{{ $val->unit_related_by->related_by }}" data-price="{{ $val->unit_price }}">{{ $val->name }}</option>
                                                 @endforeach
                                             </select>
                                             

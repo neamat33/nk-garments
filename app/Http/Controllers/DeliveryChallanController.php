@@ -15,6 +15,16 @@ use App\Models\Party;
 
 class DeliveryChallanController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('can:list-delivery_challan', ['only' => ['index']]);
+        $this->middleware('can:create-delivery_challan', ['only' => ['create']]);
+        $this->middleware('can:edit-delivery_challan', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-delivery_challan', ['only' => ['destroy']]);
+        $this->middleware('can:delivery_challan_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:delivery_challan_report', ['only' => ['report']]);
+    }
+
     public function index(){
         $challans =  DeliveryChallan::orderBy('id','desc')->paginate(20);
         return view('admin.challan.delivery.index',compact('challans'));
@@ -110,12 +120,9 @@ class DeliveryChallanController extends Controller
             }
 
             $challan->sale->update_calculated_data();
-
             
             DB::commit();
-
-            return redirect()->route('delivery-challan.index')->with('success', 'Data saved!');
-
+            return redirect()->route('delivery-challan.index')->with('success', 'Receive Challan successful!');
 
         } catch (\Exception $e) {
             DB::rollback();

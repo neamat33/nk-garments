@@ -19,6 +19,12 @@ class ItemsController extends Controller
     {
         $this->file_path = 'asset/uploads/item_image/';
         $this->default_image = 'asset/placeholder_190x140c.png';
+
+        $this->middleware('can:list-item', ['only' => ['index']]);
+        $this->middleware('can:create-item', ['only' => ['create']]);
+        $this->middleware('can:edit-item', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-item', ['only' => ['destroy']]);
+        $this->middleware('can:item-stock', ['only' => ['stock']]);
     }
     /**
      * Display a listing of the resource.
@@ -102,7 +108,7 @@ class ItemsController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'main_unit_id' => 'required',
+            'main_unit_id' => 'nullable',
             'unit_price' => 'required',
             'unit_price_for_salary' => 'required',
         ]);
@@ -118,6 +124,7 @@ class ItemsController extends Controller
 
         $item = new items();
         $item->type = $request->type;
+        $item->product_type = $request->product_type;
         $item->name = $request->name;
         $item->weight = $request->weight;
         $item->count = $request->count;
@@ -126,18 +133,20 @@ class ItemsController extends Controller
         $item->double_dye = $request->double_dye;
         $item->wash = $request->wash;
         $item->roll = $request->roll;
-        $item->main_unit_id=$request->main_unit_id;
-        $item->sub_unit_id=$request->sub_unit_id;
+        $item->main_unit_id=$request->main_unit_id ?? 1;
+        $item->sub_unit_id=$request->sub_unit_id ?? 1;
         $item->finished = $request->finished;
         $item->gsm = $request->gsm;
         $item->source = $request->source;
         $item->cone = $request->cone;
         $item->production_type = $request->production_type;
         $item->csp = $request->csp;
-        $item->twist = $request->twist;
+        $item->twist = $request->twist; 
         $item->image = $item_image;
         $item->unit_price = $request->unit_price;
         $item->unit_price_for_salary = $request->unit_price_for_salary;
+        $item->costing_unit = $request->costing_unit;
+        $item->costing_type = $request->costing_type;
         $item->note = $request->note;
         $item->show_variation=$request->show_variation;
         $item->save();
@@ -230,8 +239,12 @@ class ItemsController extends Controller
 
     public function getVariations($itemId)
     {
+        $item = items::where('show_variation', 1)->find($itemId);
+        if(!$item){
+            return response()->json(null);
+        }
         $variations = items::where('show_variation', 1)
-            ->findOrFail($itemId)
+            ->find($itemId)
             ->variations()
             ->with('item_size', 'item_color')
             ->get();
@@ -240,7 +253,8 @@ class ItemsController extends Controller
         foreach ($variations as $variation) {
             $variation->stock = $variation->stock(); // Make sure the stock method is defined in the ItemVariation model
         }
-    
+        
+
         return response()->json($variations);
     }
 

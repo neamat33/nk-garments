@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware('can:create-brand', ['only' => ['create','store','edit','update']]);
+        $this->middleware('can:delete-brand', ['only' => ['destroy']]);
+    }
+    
     public function index(){
 
     }

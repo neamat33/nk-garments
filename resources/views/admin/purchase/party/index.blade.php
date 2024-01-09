@@ -112,36 +112,62 @@
                                     <td>{{ $purchase->department->name}}</td>
                                     <td>{{date('d M, Y', strtotime($purchase->purchase_date))}}</td>
                                     <td>{{date('d M, Y', strtotime($purchase->delivery_date))}}</td>
-                                    <td>{{$purchase->payable}}</td>
+                                    <td>{{$purchase->final_payable}}</td>
                                     <td>{{$purchase->paid}}</td>
                                     <td>{{$purchase->due}}</td>
                                     <td>
-                                        <span
-                                            class="badge light badge-{{ $purchase->delivery_status == 'Delivered' ? 'success' : 'warning' }}">
-                                            {{ $purchase->delivery_status }}</span>
+                                        <span class="badge light badge-{{ $purchase->delivery_status == 'Delivered' ? 'success' : ($purchase->delivery_status == 'Full Return' ? 'danger' : 'primary') }}">
+                                            {{ $purchase->delivery_status }}
+                                         </span>
                                     </td>
                                     <td class="print_hidden">
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-primary dropdown-toggle"
                                                 data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('party-purchase.invoice',$purchase->id) }}">Invoice</a>
+                                                @can('party_purchase_invoice')
+                                                <a class="dropdown-item" href="{{ route('party-purchase.invoice',$purchase->id) }}">
+                                                    <i class="fas fa-print"></i> Invoice
+                                                </a>
+                                                @endcan
+
                                                 @if ($purchase->delivery_status =="Not Delivered")
-                                                <a class="dropdown-item" href="{{ route('party-purchase.edit',$purchase->id) }}">Edit</a>
-                                                <a class="dropdown-item" href="{{ route('challan.receive',$purchase->id) }}">Create
-                                                    Challan</a>
+                                                @can('edit-party_purchase')
+                                                <a class="dropdown-item" href="{{ route('party-purchase.edit',$purchase->id) }}"><i class="fas fa-edit"></i> Edit</a>
+                                                @endcan
+
+                                                @can('create-receive_challan')
+                                                <a class="dropdown-item" href="{{ route('challan.receive',$purchase->id) }}">
+                                                    <i class="fas fa-plus-circle"></i> Create Challan
+                                                </a>
+                                                @endcan
                                                 @endif
+
+                                                @can('create-purchase_return')
+                                                <a class="dropdown-item" href="{{ route('party-purchase.return',$purchase->id) }}">
+                                                    <i class="fas fa-undo"></i> Return Purchase
+                                                </a>
+                                                @endcan
+
+                                                @can('party_purchase_add_payment')
                                                 @if ($purchase->due > 0)
                                                 <a class="dropdown-item" href="javascript:void(0)"
                                                     data-bs-toggle="modal" data-id="{{ $purchase->id }}"
-                                                    id="add-payment" data-bs-target="#payment-modal">Add Payment</a>
+                                                    id="add-payment" data-bs-target="#payment-modal"><i class="fas fa-money-check-alt"></i> Add Payment</a>
                                                 @endif
-                                                <a class="dropdown-item"
-                                                    href="{{ route('party-purchase.payment_list',$purchase->id) }}">Payment
-                                                    List</a>
+                                                @endcan
+                                                
+                                                @can('party_purchase_payment_list')
+                                                <a class="dropdown-item" href="{{ route('party-purchase.payment_list',$purchase->id) }}"> 
+                                                    <i class="fas fa-money-bill-alt"></i> Payments List
+                                                </a>
+                                                @endcan
+                                                
+                                                @can('delete-party_purchase')
                                                 <a class="dropdown-item" href="" data-bs-toggle="modal"
                                                     data-bs-target=".delete-modal"
-                                                    onclick="handle({{ $purchase->id }})">Delete</a>
+                                                    onclick="handle({{ $purchase->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
                                     </td>

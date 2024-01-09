@@ -31,11 +31,18 @@ class PartySaleItem extends Model
         return $this->hasMany(DeliveryChallanItem::class,'party_sale_item_id');
     }
 
+    public function return_sale_items()
+    {
+        return $this->hasMany(PartySaleReturnItem::class,'party_sale_item_id');
+    }
+
     public function update_delivery_qty(){
-        $due_main=$this->main_unit_qty - $this->delivery_challan_items->sum('main_unit_qty');
-        $due_sub=$this->sub_unit_qty - $this->delivery_challan_items->sum('sub_unit_qty');
+        $due_main=$this->main_unit_qty - $this->delivery_challan_items->sum('main_unit_qty') - $this->return_sale_items->sum('main_unit_qty');
+        $due_sub=$this->sub_unit_qty - $this->delivery_challan_items->sum('sub_unit_qty') -  $this->return_sale_items->sum('sub_unit_qty');
         $delivery_qty=$this->delivery_challan_items->sum('qty');
-        $due_qty=$this->qty - $delivery_qty;
+        $return_qty=$this->return_sale_items->sum('qty');
+        $due_qty=$this->qty - $delivery_qty - $return_qty;
+        
         $this->update([
             'due_main_unit_qty' => $due_main,
             'due_sub_unit_qty'  => $due_sub,

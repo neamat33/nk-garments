@@ -11,13 +11,11 @@ class ItemVariation extends Model
 
     protected $guarded = [];
 
-
     public function item()
     {
         return $this->belongsTo(items::class,'item_id');
     }
 
-    
     public function item_color()
     {
         return $this->belongsTo(ItemColor::class,'item_color_id');
@@ -37,10 +35,19 @@ class ItemVariation extends Model
 
     /****** CUSTOM FUNCTIONS ******/
 
-
     public function sale_count($size_id = null)
     {
         $qty = SaleItem::where('item_variation_id', $this->id)->where('department_id', session('department'));
+        if ($size_id != null) {
+            $qty = $qty->where('item_variation_id', $size_id)->where('department_id', session('department'));
+        }
+
+        return $qty->sum('qty');
+    }
+
+    public function sale_return_count($size_id = null)
+    {
+        $qty = SaleReturnItem::where('item_variation_id', $this->id)->where('department_id', session('department'));
         if ($size_id != null) {
             $qty = $qty->where('item_variation_id', $size_id)->where('department_id', session('department'));
         }
@@ -74,8 +81,9 @@ class ItemVariation extends Model
     {
         $receive_challan=$this->receive_challan_count();
         $sold=$this->sale_count();
+        $sale_return=$this->sale_return_count();
         $delivery_challan=$this->delivery_challan_count();
-        return $receive_challan - $sold - $delivery_challan;
+        return $receive_challan - $sold + $sale_return - $delivery_challan;
     }
 
 

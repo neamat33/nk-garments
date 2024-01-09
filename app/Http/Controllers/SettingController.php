@@ -16,7 +16,6 @@ class SettingController extends Controller
         $this->path = 'asset/uploads/setting/';
         $this->default_image = 'asset/images/logo.png';
         $this->middleware('can:setting',  ['only' => ['setting', 'update_setting']]);
-
     }
 
     /**
@@ -36,20 +35,19 @@ class SettingController extends Controller
         ]);
 
         $setting=Setting::first();
-        // if ($request->hasFile('logo')) {
-        //     $logo = InputHelper::upload($request->image, $this->path);
-        //     if ($setting->logo != $this->path) {
-        //         InputHelper::delete($setting);
-        //     }
-        // } else {
-        //     $logo = $this->default_image;
-        // }
+   
+        if ($request->hasFile('logo')) {
+            if ($setting->logo != $this->path) {
+                InputHelper::delete($setting);
+            }
+            $logo = InputHelper::upload($request->logo, $this->path);
+            $setting->logo = $logo;
+        }
 
         $setting->company = $request->company;
         $setting->email = $request->email;
         $setting->phone = $request->phone;
         $setting->invoice_logo_type = $request->invoice_logo_type;
-        // $setting->logo = $logo;
         $setting->address = $request->address;
 
         $setting->save();
@@ -62,38 +60,6 @@ class SettingController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
     {
         //
     }

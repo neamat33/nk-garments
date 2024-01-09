@@ -5,13 +5,14 @@
     @media print {
         body * {
             visibility: visible !important;
-            color:#000 !important;
+            color: #000 !important;
         }
 
-        h4.card-title{
-            color:#000 !important;   
+        h4.card-title {
+            color: #000 !important;
         }
-        .print_hidden{
+
+        .print_hidden {
             display: none !important;
         }
     }
@@ -27,48 +28,56 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Purchase Form</strong></label>
-                                <input type="text" class="form-control" placeholder="Purchase Form" name="purchase_form" value="{{ request('purchase_form') }}">
+                                <input type="text" class="form-control" placeholder="Purchase Form" name="purchase_form"
+                                    value="{{ request('purchase_form') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Phone</strong></label>
-                              <input type="text" class="form-control" placeholder="Phone" name="phone" value="{{ request('phone') }}">
+                                <input type="text" class="form-control" placeholder="Phone" name="phone"
+                                    value="{{ request('phone') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Purchase Date</strong></label>
-                                <input class="form-control input-daterange-datepicker" type="text" name="purchase_date" autocomplete="off" value="{{ request('purchase_date') }}">
+                                <input class="form-control input-daterange-datepicker" type="text" name="purchase_date"
+                                    autocomplete="off" value="{{ request('purchase_date') }}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Delivery Date</strong></label>
-                                <input class="form-control input-daterange-datepicker" type="text" name="delivery_date" autocomplete="off" value="{{ request('delivery_date') }}">
+                                <input class="form-control input-daterange-datepicker" type="text" name="delivery_date"
+                                    autocomplete="off" value="{{ request('delivery_date') }}">
                             </div>
-                        </div> 
+                        </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="form-label"><strong>Purchase By</strong></label>
                                 <select name="purchase_by" id="" class="form-control">
                                     <option value="">Select Purchase By</option>
                                     @foreach($employees as $employee)
-                                    <option value="{{$employee->id}}" {{ request('purchase_by')==$employee->id?'SELECTED':'' }}>{{$employee->employee_name}}</option>
+                                    <option value="{{$employee->id}}" {{ request('purchase_by')==$employee->
+                                        id?'SELECTED':'' }}>{{$employee->employee_name}}</option>
                                     @endforeach
                                 </select>
                             </div>
-                        </div> 
-                
+                        </div>
+
                     </div>
                     <div class="row text-end">
-                          <div class="col-md-12">
-                            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-search"></i> Filter</button>
-                            <a href="{{ request()->url() }}" class="btn btn-warning btn-sm"><i class="fa fa-refresh"></i> Reset</a>
-                            <button class="btn btn-primary btn-sm print_hidden print_button" onclick="print_receipt('print-area')"> 
-                            <i class="fa fa-print"></i> Print
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success btn-sm"><i class="fa fa-search"></i>
+                                Filter</button>
+                            <a href="{{ request()->url() }}" class="btn btn-warning btn-sm"><i
+                                    class="fa fa-refresh"></i> Reset</a>
+                            <button class="btn btn-primary btn-sm print_hidden print_button"
+                                onclick="print_receipt('print-area')">
+                                <i class="fa fa-print"></i> Print
                             </button>
-                        </div>   
+                        </div>
                     </div>
                 </div>
             </form>
@@ -83,56 +92,90 @@
                         <table class="table table-responsive-md">
                             <thead>
                                 <tr>
-                                   <th class="width80"><strong>#</strong></th>
-                                   <th><strong>Purchase From</strong></th>
-                                   <th><strong>Department</strong></th>
-                                   <th><strong>Phone Number</strong></th>
-                                   <th><strong>Purchase Date</strong></th>
-                                   <th><strong>Delivery Date</strong></th>
-                                   <th><strong>Purchase By</strong></th>
-                                   <th><strong>Total Price</strong></th>
-                                   <th><strong>Total Paid</strong></th>
-                                   <th><strong>Due</strong></th>
-                                   <th><strong>Status</strong></th>
-                                   <th class="print_hidden"><strong>Action</strong></th>
+                                    <th class="width80"><strong>#</strong></th>
+                                    <th><strong>Purchase From</strong></th>
+                                    <th><strong>Department</strong></th>
+                                    <th><strong>Phone Number</strong></th>
+                                    <th><strong>Purchase Date</strong></th>
+                                    <th><strong>Delivery Date</strong></th>
+                                    <th><strong>Purchase By</strong></th>
+                                    <th><strong>Total Price</strong></th>
+                                    <th><strong>Total Paid</strong></th>
+                                    <th><strong>Due</strong></th>
+                                    <th><strong>Status</strong></th>
+                                    <th class="print_hidden"><strong>Action</strong></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php $i=1; @endphp
                                 @foreach ($purchases as $purchase)
                                 <tr>
-                                   <td>{{ $purchase->id}}</td>
-                                   <td>{{ $purchase->purchase_form}}</td>
-                                   <td>{{ $purchase->department->name}}</td>
-                                   <td>{{ $purchase->phone}}</td>
-                                   <td>{{date('d M, Y', strtotime($purchase->purchase_date))}}</td>
-                                   <td>{{date('d M, Y', strtotime($purchase->delivery_date))}}</td>
-                                   <td>{{$purchase->purchase_by_employee->employee_name}}</td>
-                                   <td>{{$purchase->payable}}</td>
-                                   <td>{{$purchase->paid}}</td>
-                                   <td>{{$purchase->due}}</td>
-                                   <td>
-                                        <span
-                                            class="badge light badge-{{ $purchase->delivery_status == 'Delivered' ? 'success' : 'warning' }}">
-                                            {{ $purchase->delivery_status }}</span>
+                                    <td>{{ $purchase->id}}</td>
+                                    <td>{{ $purchase->purchase_form}}</td>
+                                    <td>{{ $purchase->department->name}}</td>
+                                    <td>{{ $purchase->phone}}</td>
+                                    <td>{{date('d M, Y', strtotime($purchase->purchase_date))}}</td>
+                                    <td>{{date('d M, Y', strtotime($purchase->delivery_date))}}</td>
+                                    <td>{{$purchase->purchase_by_employee->employee_name}}</td>
+                                    <td>{{$purchase->final_payable}}</td>
+                                    <td>{{$purchase->paid}}</td>
+                                    <td>{{$purchase->due}}</td>
+                                    <td>
+                                        <span class="badge light badge-{{ $purchase->delivery_status == 'Delivered' ? 'success' : ($purchase->delivery_status == 'Full Return' ? 'danger' : 'primary') }}">
+                                            {{ $purchase->delivery_status }}
+                                         </span>
                                     </td>
-                                   <td class="print_hidden">
-                                       <div class="btn-group" role="group">
-                                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">Action</button>
+                                    <td class="print_hidden">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary dropdown-toggle"
+                                                data-bs-toggle="dropdown">Action</button>
                                             <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('petty-purchase.invoice',$purchase->id) }}">Invoice</a>
-                                               @if ($purchase->delivery_status =="Not Delivered")
-                                                <a class="dropdown-item" href="{{ route('petty-purchase.edit',$purchase->id) }}">Edit</a>
-                                                <a class="dropdown-item" href="{{ route('challan.receive',$purchase->id) }}">Create Challan</a>
+                                                @can('petty_purchase_invoice')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('petty-purchase.invoice',$purchase->id) }}"><i class="fas fa-print"></i> Invoice</a>
+                                                @endcan
+
+                                                @if ($purchase->delivery_status =="Not Delivered")
+                                                @can('edit-petty_purchase')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('petty-purchase.edit',$purchase->id) }}"><i class="fas fa-edit"></i> Edit</a>
+                                                @endcan
+                                                
+                                                @can('create-receive_challan')
+                                                <a class="dropdown-item"
+                                                    href="{{ route('challan.receive',$purchase->id) }}"><i class="fas fa-plus-circle"></i> Create
+                                                    Challan</a>
+                                                @endcan
                                                 @endif
-                                                <a class="dropdown-item" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $purchase->id }})">Delete</a>
+
+                                                @can('create-purchase_return')
+                                                <a class="dropdown-item" href="{{ route('petty-purchase.return',$purchase->id) }}">
+                                                    <i class="fas fa-undo"></i> Return Purchase
+                                                </a>
+                                                @endcan
+                                             
                                                 @if ($purchase->due > 0)
-                                                <a class="dropdown-item" href="javascript:void(0)" data-bs-toggle="modal" data-id="{{ $purchase->id }}" id="add-payment" data-bs-target="#payment-modal">Add Payment</a>
+                                                @can('petty_purchase_add_payment')
+                                                <a class="dropdown-item" href="javascript:void(0)"
+                                                    data-bs-toggle="modal" data-id="{{ $purchase->id }}"
+                                                    id="add-payment" data-bs-target="#payment-modal"><i class="fas fa-money-check-alt"></i> Add Payment</a>
+                                                @endcan
                                                 @endif
-                                                <a class="dropdown-item" href="{{ route('petty-purchase.payment_list',$purchase->id) }}">Payment List</a>
+                                                
+                                                @can('petty_purchase_payment_list')
+                                                <a class="dropdown-item" href="{{ route('petty-purchase.payment_list',$purchase->id) }}">
+                                                    <i class="fas fa-money-bill-alt"></i> Payments List
+                                                </a>
+                                                @endcan
+
+                                                @can('delete-petty_purchase')
+                                                <a class="dropdown-item" href="" data-bs-toggle="modal"
+                                                data-bs-target=".delete-modal"
+                                                onclick="handle({{ $purchase->id }})"><i class="fas fa-trash"></i> Delete</a>
+                                                @endcan
                                             </div>
                                         </div>
-                                   </td>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

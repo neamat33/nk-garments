@@ -20,6 +20,20 @@ class PartySaleController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    function __construct()
+    {
+        $this->middleware('can:list-party_sale', ['only' => ['index']]);
+        $this->middleware('can:create-party_sale', ['only' => ['create']]);
+        $this->middleware('can:edit-party_sale', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-party_sale', ['only' => ['destroy']]);
+        $this->middleware('can:party_sale_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:party_sale_report', ['only' => ['report']]);
+        $this->middleware('can:create-party_sale_return', ['only' => ['return_sale']]);
+        $this->middleware('can:party_sale_add_payment', ['only' => ['by_invoice']]);
+        $this->middleware('can:party_sale_payment_list', ['only' => ['payment_list']]);
+    }
+    
     public function index(Request $request)
     {
         $sales= new PartySale();
@@ -37,10 +51,10 @@ class PartySaleController extends Controller
      */
     public function create()
     {
-        $item = items::orderBy('id','desc')->get();
+        $item = items::orderBy('id','desc')->where('product_type',0)->get();
         $parties = Party::orderBy('id','desc')->get();
         $employees = Employee::orderBy('id','desc')->get();
-        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
+        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get(); 
         $bank_accounts=BankAccount::where('default',1)->get();
 
         return view('admin.sale.party.create',compact('item','parties','employees','showrooms','bank_accounts'));
@@ -56,7 +70,7 @@ class PartySaleController extends Controller
             'sale_date' => 'required|date|date_format:Y-m-d',
             'sold_by' => 'required',
             'delivery_date' => 'required|date|date_format:Y-m-d',
-            'receivable'     =>'required',
+            // 'receivable'     =>'required',
         ]);
 
         try {
@@ -73,9 +87,10 @@ class PartySaleController extends Controller
                 'sold_by'       => $request->sold_by,
                 'order_by'      => $request->order_by,
                 'note'          => $request->note,
-                'total_discount'    => $request->total_discount,
-                'receivable'    => $request->receivable,
-                'final_receivable'    => $request->receivable,
+                'total_discount'=> $request->total_discount,
+                'sale_commission' => $request->total_commission,
+                // 'receivable'    => $request->receivable,
+                // 'final_receivable'    => $request->receivable,
             ]);
             
             foreach ($request->new_item as $key=>$item_id) {
@@ -179,7 +194,7 @@ class PartySaleController extends Controller
             $sale->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'data saved!');
+            return back()->with('success', 'Party sale successfully!');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -269,7 +284,7 @@ class PartySaleController extends Controller
             $party_sale->update_calculated_data();
 
             DB::commit();
-            return back()->with('success', 'Data updated!');
+            return back()->with('success', 'Party Sale successful!');
         } catch (\Exception $e) {
             DB::rollback();
             info($e);
@@ -301,9 +316,21 @@ class PartySaleController extends Controller
         $item = items::orderBy('id','desc')->get();
         $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
         $parties =  Party::orderBy('id','desc')->get();
-        $departments = Department::orderBy('id','desc')->get();
         $employees =  Employee::orderBy('id','desc')->get();
-        return view('admin.challan.delivery.create',compact('party_sale','item','showrooms','parties','departments','employees'));
+        return view('admin.challan.delivery.create',compact('party_sale','item','showrooms','parties','employees'));
+    }
+
+    public function return_sale(PartySale $party_sale){
+        $item = items::orderBy('id','desc')->get();
+        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
+        $parties =  Party::orderBy('id','desc')->get();
+        $employees =  Employee::orderBy('id','desc')->get();
+
+        if($party_sale->party_sale_return()->count() > 0){
+            session()->flash('warning', 'This sale has already been returned.');
+            return back();
+        }
+        return view('admin.sale.party.return.create',compact('party_sale','item','showrooms','parties','employees'));
     }
 
     public function get_sale($id){

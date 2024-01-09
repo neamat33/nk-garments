@@ -16,6 +16,11 @@ class PartyController extends Controller
     {
         $this->file_path = 'asset/uploads/party/';
         $this->default_image = 'asset/placeholder_190x140c.png';
+        
+        $this->middleware('can:list-party', ['only' => ['index']]);
+        $this->middleware('can:create-party', ['only' => ['create']]);
+        $this->middleware('can:edit-party', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-party', ['only' => ['destroy']]);
     }
 
     /**

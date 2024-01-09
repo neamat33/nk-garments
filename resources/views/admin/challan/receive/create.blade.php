@@ -167,6 +167,7 @@
                                         <th style="width: 25%"><strong>Qty</strong></th>
                                         <th style="width: 10%"><strong>Total Packages</strong></th>
                                         <th style="width: 10%"><strong>Packaging Details</strong></th>
+                                        <th style="width: 10%"><strong>Action</strong></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -207,6 +208,11 @@
                                             <textarea name="packaging_details[]" id="packaging_details" cols="60" rows="1" class="form-control form-control-sm packaging_details"></textarea>
 
                                         </td>
+                                        <td>
+                                           <button type="button" class="btn btn-danger btn-sm no-return">
+                                                <i class="fa fa-trash"></i> Remove
+                                            </button>
+                                        </td>
                             
                                     </tr>
                                     @endif
@@ -217,8 +223,8 @@
                                 
                                     <tr class="">
                                         <th class="text-end" colspan="2"> </th>
-                                        <th class="text-center">Total : {{ $purchase->items->sum('due_qty') }}</th>
-                                        <th><strong></strong></th>
+                                        <th class="text-center" id="total_qty">Total Qty : {{ $purchase->items->sum('due_qty') }}</th>
+                                        <th colspan="4"><strong></strong></th>
             
                                     </tr>
                                 </tfoot>
@@ -263,50 +269,6 @@
         });
 
     </script>
-    
-     <script>
-        function empty_field_check(placeholder) {
-            if (placeholder == null) {
-                placeholder = 0;
-            } else if (placeholder.trim() == "") {
-                placeholder = 0;
-            }
-            return placeholder;
-        }
+    @include('admin.challan.script')
 
-       $(document).ready(function () {
-            $('.main_unit_qty').on('input', function () {
-                let obj = $(this);
-                let dataSubQty = obj.data('main_unit');
-                let dueSubQtyValue = parseFloat(obj.val());
-
-                // Ensure that the value is at least 1
-                if (isNaN(dueSubQtyValue) || dueSubQtyValue < 1) {
-                    toastr.warning('The quantity in sub unit cannot be less than 1');
-                    obj.val(1);
-                } else if (dueSubQtyValue > parseFloat(dataSubQty)) {
-                    toastr.warning('The quantity in sub unit cannot exceed');
-                    obj.val(dataSubQty);
-                }
-            });
-        });
-
-         $(document).ready(function () {
-            $('.sub_unit_qty').on('input', function () {
-                let obj = $(this);
-                let dataSubQty = obj.data('sub_qty');
-                let dueSubQtyValue = parseFloat(obj.val());
-
-                // Ensure that the value is at least 1
-                if (isNaN(dueSubQtyValue) || dueSubQtyValue < 1) {
-                    toastr.warning('The quantity in sub unit cannot be less than 1');
-                    obj.val(1);
-                } else if (dueSubQtyValue > parseFloat(dataSubQty)) {
-                    toastr.warning('The quantity in sub unit cannot exceed');
-                    obj.val(dataSubQty);
-                }
-            });
-        });
-    </script>
-    
 @endsection

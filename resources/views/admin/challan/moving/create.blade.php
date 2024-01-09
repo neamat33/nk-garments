@@ -12,14 +12,14 @@
         }
 
         .quantity .main_unit {
-            width: 100%;
+            width: 48%;
             float: left;
             margin-right: 5px;
         }
 
         .quantity .sub_unit {
-            max-width: 100%;
-            width: 100%;
+            max-width: 48%;
+            width: 48%;
             float: left;
             margin-right: 5px;
         }
@@ -108,11 +108,28 @@
                                 <select name="delivery_to" id="" class="form-control form-control-sm">
                                     <option value="">Select Department</option>
                                     @foreach($departments as $department)
-                                    <option value="{{$department->id}}">{{$department->name}}</option>
+                                    <option value="{{$department->name}}">{{$department->name}}</option>
                                     @endforeach
                                 </select>
                                 @if($errors->has('delivery_to'))
                                     <span class="invalid-feedback">{{ $errors->first('delivery_to') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="mb-3 row">
+                            <label class="col-sm-3 col-form-label">Delivery Form :</label>
+                            <div class="col-sm-9">
+                                <select name="delivery_from" id="" class="form-control form-control-sm">
+                                    <option value="">Select Department</option>
+                                    @foreach($departments as $department)
+                                    <option value="{{$department->name}}">{{$department->name}}</option>
+                                    @endforeach
+                                </select>
+                                @if($errors->has('delivery_from'))
+                                    <span class="invalid-feedback">{{ $errors->first('delivery_from') }}</span>
                                 @endif
                             </div>
                         </div>
@@ -204,8 +221,7 @@
                                     <tr>
                                         <th style="width: 10%"><strong>Item</strong></th>
                                         <th style="width: 20%"><strong>Item Details</strong></th>
-                                        <th style="width: 10%"><strong>Variation</strong></th>
-                                        <th style="width: 10%"><strong>Qty</strong></th>
+                                        <th style="width: 20%"><strong>Qty</strong></th>
                                         <th style="width: 10%"><strong>Total Packages</strong></th>
                                         <th style="width: 15%"><strong>Packaging Details</strong></th>
                                         <th style="width:10%"><strong>Rate</strong></th>
@@ -228,11 +244,7 @@
                                         <td>
                                             <textarea name="item_details[]" id="item_details" cols="60" rows="1" class="form-control form-control-sm item-details"></textarea>
                                         </td>
-                                        <td>
-                                            <select class="form-control form-control-sm variation" name="item_variation_id[]">
-                                                <option value="">Select</option>
-                                            </select>
-                                        </td>
+
                                         <td>
                                             <div class="quantity">
                                                 <div class="main_unit">
@@ -242,7 +254,7 @@
                                                 <div class="sub_unit">
                                                     <label class="sub_unit_name"></label>
                                                     <input type="number" name="sub_unit_qty[]" id="sub_unit_qty" class="form-control form-control-sm sub_unit_qty">
-                                                    <input type="hidden" class="related_by" name="related_by[]" value="">
+                                                    <input type="hidden" class="related_by" value="">
                                                 </div>   
                                             </div>
                                         </td>
@@ -319,6 +331,6 @@
 
     </script>
         
-   @include('admin.challan..moving.scripts')
+   @include('admin.delivery-challan.scripts')
     
 @endsection

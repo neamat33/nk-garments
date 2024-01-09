@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('type');
+            $table->tinyInteger('product_type')->default(0)->comment('0= Finish Product, 1= Raw Product');
             $table->string('name');
             $table->string('weight')->nullable();
             $table->string('count')->nullable();
@@ -30,12 +31,15 @@ return new class extends Migration
             $table->string('csp')->nullable();
             $table->string('twist')->nullable();
             $table->string('image')->nullable();
-            $table->string('unit_price');
-            $table->string('unit_price_for_salary');
+            $table->decimal('unit_price');
+            $table->decimal('unit_price_for_salary');
+            $table->string('costing_unit')->nullable();
+            $table->string('costing_type')->comment('1=receive, 2=send');
             $table->integer('main_unit_id');
             $table->integer('sub_unit_id')->nullable();
             $table->integer('total_sold')->default(0);
             $table->integer('total_purchase')->default(0);
+            $table->integer('total_production')->default(0);
             // $table->integer('stock')->default(0);
             // $table->integer('main_unit_stock')->default(0);
             // $table->integer('sub_unit_stock')->default(0);

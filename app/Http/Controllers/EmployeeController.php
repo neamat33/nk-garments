@@ -19,6 +19,11 @@ class EmployeeController extends Controller
     {
         $this->file_path = 'asset/uploads/employee/';
         $this->default_image = 'asset/placeholder_190x140c.png';
+
+        $this->middleware('can:list-employee', ['only' => ['index']]);
+        $this->middleware('can:create-employee', ['only' => ['create']]);
+        $this->middleware('can:edit-employee', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-employee', ['only' => ['destroy']]);
     }
 
     public function index(){

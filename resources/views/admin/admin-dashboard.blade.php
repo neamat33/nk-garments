@@ -32,7 +32,7 @@
 
         <div class="footer">
             <div class="copyright">
-                <p>Copyright © Designed &amp; Developed by <a href="https://softghor.com/" target="_blank">softghor Limited</a> {{date('Y')}}</p>
+                <p>Copyright © Designed &amp; Developed by <a href="https://softghor.com/" target="_blank">Softghor Limited</a> {{date('Y')}}</p>
             </div>
         </div>
     </div>

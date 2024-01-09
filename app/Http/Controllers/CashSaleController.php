@@ -12,9 +12,23 @@ use App\Models\Party;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\ItemVariation;
+use App\Models\Payment;
 use Redirect,Response;
 class CashSaleController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware('can:list-cash_sale', ['only' => ['index']]);
+        $this->middleware('can:create-cash_sale', ['only' => ['create']]);
+        $this->middleware('can:edit-cash_sale', ['only' => ['edit','update']]);
+        $this->middleware('can:delete-cash_sale', ['only' => ['destroy']]);
+        $this->middleware('can:cash_sale_invoice', ['only' => ['invoice']]);
+        $this->middleware('can:cash_sale_report', ['only' => ['report']]);
+        $this->middleware('can:cash_sale_add_payment', ['only' => ['by_invoice']]);
+        $this->middleware('can:cash_sale_payment_list', ['only' => ['payment_list']]);
+        $this->middleware('can:create-cash_sale_return', ['only' => ['return_sale']]);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -52,7 +66,7 @@ class CashSaleController extends Controller
             'delivery_date' => 'required|date|date_format:Y-m-d',
             'sale_date' => 'required|date|date_format:Y-m-d',
             'sold_by' => 'required',
-            'receivable' =>'required',
+            // 'receivable' =>'required',
         ]);
 
         try {
@@ -70,9 +84,10 @@ class CashSaleController extends Controller
                 'delivery_to'      => $request->delivery_to,
                 'sold_by'          => $request->sold_by,
                 'note'             => $request->note,
-                'total_discount'   => $request->total_discount,
-                'receivable'       => $request->receivable,
-                'final_receivable' => $request->receivable,
+                'total_discount'=> $request->total_discount,
+                'total_commission' => $request->total_commission,
+                // 'receivable'       => $request->receivable,
+                // 'final_receivable' => $request->receivable,
             ]);
 
             $sale->update_calculated_data();
@@ -216,7 +231,7 @@ class CashSaleController extends Controller
             $sale->update_calculated_data();
             
             DB::commit();
-            return back()->with('success', 'data saved!');
+            return back()->with('success', 'Cash Sale successful!');
 
         } catch (\Exception $e) {
             DB::rollback();
@@ -358,11 +373,25 @@ class CashSaleController extends Controller
 		$sale = Sale::where($where)->first();
 		return Response::json($sale);
     }
+
+    public function return_sale(Sale $cash_sale){
+        $item = items::orderBy('id','desc')->get();
+        $showrooms=Branch::where('status',1)->orderBy('id','desc')->get();
+        $employees =  Employee::orderBy('id','desc')->get();
+        
+        if($cash_sale->sale_return()->count() > 0){
+            session()->flash('warning', 'This sale has already been returned.');
+            return back();
+        }
+
+        return view('admin.sale.cash.return.create',compact('cash_sale','item','showrooms','employees'));
+    }
+
     public function by_invoice(Request $request){
         $sale = Sale::findOrFail($request->invoice_id);
         $sale->payments()->create([
             'department_id'     => session('department'),
-            'payment_date'      =>  $request->sale_date,
+            'payment_date'      => date('Y-m-d'),
             'bank_account_id'   => $request->bank_account_id,
             'source_of_payment' => "Cash Sale",
             'payment_type'      => 'receive',
@@ -397,6 +426,12 @@ class CashSaleController extends Controller
         })->orderBy('id', 'desc')->paginate(20);
 
         return view('admin.sale.cash.report',compact('sales'));
+    }
+
+    public function payment_list(Sale $cash_sale){
+        $payments = Payment::where('source_of_payment','Cash Sale')->where('paymentable_id',$cash_sale->id)->orderBy('id','desc')->paginate(20);
+
+        return view('admin.sale.cash.payment-list',compact('payments'));
     }
 
     public function invoice($sale_id){

@@ -69,7 +69,9 @@
                                                 @endif
                                             </td>
                                         <td>
-                                            <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg{{$item->id}}">Edit</button>
+                                            @can('edit-brand')
+                                            <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg{{$item->id}}"><i class="fas fa-edit"></i> Edit</button>
+                                            @endcan
                                             <div class="modal fade bd-example-modal-lg{{$item->id}}" tabindex="-1" role="dialog" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">

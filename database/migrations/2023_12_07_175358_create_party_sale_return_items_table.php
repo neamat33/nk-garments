@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('party_sale_return_items', function (Blueprint $table) {
             $table->id();
             $table->integer('department_id');
-            $table->integer('party_sale_return_id');
-            $table->integer('party_sale_item_id');
+            $table->foreignId('party_sale_return_id')->references('id')->on('party_sale_returns')->onDelete('cascade');
+            $table->foreignId('party_sale_item_id')->references('id')->on('party_sale_items')->onDelete('cascade');
             $table->unsignedInteger('item_id');
             $table->integer('main_unit_qty')->nullable();
             $table->integer('sub_unit_qty')->nullable();
             $table->integer('qty');
             $table->unsignedBigInteger('item_variation_id')->nullable();
-            $table->decimal('commission',10,2)->nullable();
+            // $table->decimal('commission',10,2)->nullable();
             $table->decimal('rate', 10, 2);
             $table->decimal('sub_total', 12, 2);
             $table->timestamps();

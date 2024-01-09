@@ -27,6 +27,8 @@ return new class extends Migration
             $table->integer('due_qty')->nullable();
             $table->decimal('rate',10,2);
             $table->decimal('sub_total',12,2);
+            $table->decimal('weight_qty',12,2)->nullable();
+            $table->decimal('cone_qty',12,2)->nullable();
             $table->timestamps();
         });
     }

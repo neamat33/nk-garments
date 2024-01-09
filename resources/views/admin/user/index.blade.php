@@ -15,9 +15,10 @@
                                     <thead>
                                         <tr>
                                             <th class="width80"><strong>#</strong></th>
-                                            <th><strong>Name</strong></th>
+                                            <th>Name</th>
                                             <th>Email</th>
                                             <th>Role</th>
+                                            <th>Photo</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -34,8 +35,11 @@
                                                 @endforeach
                                             </td>
                                             <td>
-                                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg{{$item->id}}">Edit</button>
-                                                <button type="button" class="btn btn-danger mb-2" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $item->id }})">Delete</button>
+                                                <img src="{{ asset($item->image) }}" alt="item image" width="20%">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target=".bd-example-modal-lg{{$item->id}}"><i class="fas fa-edit"></i> Edit</button>
+                                                <button type="button" class="btn btn-danger mb-2" href="" data-bs-toggle="modal" data-bs-target=".delete-modal" onclick="handle({{ $item->id }})"><i class="fas fa-trash"></i> Delete</button>
                                                 <div class="modal fade bd-example-modal-lg{{$item->id}}" tabindex="-1" role="dialog" aria-hidden="true">
                                                     <div class="modal-dialog modal-lg">
                                                         <div class="modal-content">

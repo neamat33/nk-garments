@@ -9,13 +9,15 @@ use DB;
 
 class RoleController extends Controller
 {
-    function __construct()
-    {
-        // $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
-        // $this->middleware('permission:role-create', ['only' => ['create','store']]);
-        // $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
-        // $this->middleware('permission:role-delete', ['only' => ['destroy']]);
-    }
+    // function __construct()
+    // {
+    //     $this->middleware('can:list-role', ['only' => ['index']]);
+    //     $this->middleware('can:create-role', ['only' => ['create','store']]);
+    //     $this->middleware('can:edit-role', ['only' => ['edit','update']]);
+    //     $this->middleware('can:show-role', ['only' => ['show']]);
+    //     $this->middleware('can:delete-role', ['only' => ['destroy']]);
+    // }
+
     public function index(Request $request)
     {
         $roles = Role::orderBy('name','asc')->paginate(5);
@@ -42,8 +44,11 @@ class RoleController extends Controller
             'permission' => 'required',
         ]);
 
-        $role = Role::create(['name' => $request->input('name')]);
-        $role->syncPermissions($request->input('permission'));
+        $role = Role::create([
+            'name' => $request->input('name'),
+        ]);
+    
+        $role->permissions()->sync($request->input('permission'));
 
         return redirect()->route('roles.index')->with('success','Role created successfully');
     }
@@ -77,7 +82,7 @@ class RoleController extends Controller
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
 
-        return view('admin.roles.edit',compact('role','permission','rolePermissions'));
+        return view('admin.roles.edit-role',compact('role','permission','rolePermissions'));
     }
 
     /**
@@ -87,22 +92,23 @@ class RoleController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Role $role)
     {
         $this->validate($request, [
             'name' => 'required',
-            'permission' => 'required',
+            'permission' => 'required|array',
         ]);
 
-        $role = Role::find($id);
-        $role->name = $request->input('name');
-        $role->save();
+        $role->update([
+            'name' => $request->input('name'),
+        ]);
 
-        $role->syncPermissions($request->input('permission'));
+        $role->permissions()->sync($request->input('permission'));
 
-        return redirect()->route('roles.index')
-                        ->with('success','Role updated successfully');
+        return back()->with('success', 'Role updated successfully');
     }
+
+
     /**
      * Remove the specified resource from storage.
      *
